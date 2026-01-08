@@ -1,0 +1,64 @@
+SCHOLARSHIP APPLICATION SYSTEM
+
+Common Rejection Reasons:
+- Income certificate is missing or expired
+- Caste certificate is not from competent authority
+- Bank account is not linked with Aadhaar
+- Marksheet uploaded is not clear or incomplete
+- Application submitted after deadline
+- Student's name mismatch across documents
+- Annual family income exceeds eligibility limit
+- Institute code entered incorrectly
+
+Document Requirements:
+- Aadhaar Card (mandatory)
+- Income Certificate (issued within 6 months)
+- Caste Certificate (if applicable, from SDM/Tehsildar)
+- Previous year marksheet
+- Bank passbook first page
+- Institute verification letter
+- Domicile certificate
+- Passport size photograph
+
+Verification Process:
+Step 1: Institute Level Verification
+- College/School verifies student enrollment
+- Checks document authenticity
+- Approves or rejects within 7 days
+
+Step 2: District Level Verification
+- District Education Officer verifies income certificate
+- Cross-checks caste certificate validity
+- Verifies residential proof
+- Takes 15-20 days
+
+Step 3: State Level Verification
+- Final verification by state scholarship board
+- Fund allocation confirmation
+- Takes 30-45 days
+
+Correction Process:
+- Login to scholarship portal with registration number
+- Click on "Edit Application" (only if not verified)
+- Upload corrected documents
+- Resubmit application
+- Track status in "Application Status" section
+
+Common Portal Errors:
+- "Document size too large" - Compress PDF to under 200KB
+- "Aadhaar not linked" - Link Aadhaar with bank at branch
+- "Duplicate application" - Check if already applied
+- "Institute code invalid" - Get correct code from college
+
+How to Track Application:
+- Login to portal
+- Go to "Track Application Status"
+- Check current verification stage
+- View rejection remarks if any
+- Download acknowledgement receipt
+
+Contact for Issues:
+- Institute Nodal Officer (for college-level issues)
+- District Scholarship Cell (for document verification)
+- State Helpline (for payment issues)
+- Helpdesk: 1800-XXX-XXXX

@@ -1,0 +1,95 @@
+AADHAAR CORRECTION SYSTEM
+
+Types of Corrections Allowed:
+- Name correction (spelling mistakes)
+- Date of birth correction
+- Gender correction
+- Address update
+- Mobile number update
+- Email ID update
+- Photograph update
+
+Name Correction Process:
+Step 1: Visit UIDAI website or myAadhaar portal
+Step 2: Login with Aadhaar number and OTP
+Step 3: Select "Update Aadhaar Details"
+Step 4: Choose "Name" correction
+Step 5: Upload supporting document
+Step 6: Pay fee (if applicable)
+
+Documents Required for Name Correction:
+- Passport
+- PAN Card
+- Driving License
+- Bank Passbook
+- Gazette Notification (for major changes)
+- Marriage Certificate (for married women)
+- School Leaving Certificate
+
+Date of Birth Correction:
+Documents Accepted:
+- Birth Certificate issued by Registrar
+- School Leaving Certificate with DOB
+- Passport
+- PAN Card (only if DOB is same)
+
+Important Rules:
+- Only one DOB correction allowed in lifetime
+- Document should be issued before Aadhaar enrollment
+- Affidavit alone is NOT sufficient
+
+Address Update:
+Documents Accepted:
+- Passport
+- Bank Passbook (with address printed)
+- Electricity Bill (within 3 months)
+- Telephone Bill (within 3 months)
+- Property Tax Receipt
+- Rent Agreement (registered)
+
+Online vs Offline Process:
+Online Method (for minor corrections):
+- Visit myAadhaar portal
+- Upload documents
+- Pay ₹50 (if applicable)
+- Get URN (Update Request Number)
+- Track status online
+- Updated Aadhaar delivered in 90 days
+
+Offline Method (for major corrections):
+- Visit nearest Aadhaar Seva Kendra
+- Carry original documents
+- Biometric verification required
+- Pay fee at counter
+- Collect acknowledgement slip
+- Updated Aadhaar sent to address
+
+Common Issues:
+Issue: "Document rejected during verification"
+Solution: Ensure document is clear, not expired, and name matches exactly
+
+Issue: "Mobile number not registered"
+Solution: Visit Aadhaar center with original documents to register mobile
+
+Issue: "Update request rejected"
+Solution: Check rejection reason in status, resubmit with correct documents
+
+Issue: "Aadhaar not received after update"
+Solution: Download e-Aadhaar from UIDAI website using URN
+
+Verification Timeline:
+- Document upload: Immediate
+- UIDAI verification: 7-15 days
+- Approval/Rejection: 15-30 days
+- Aadhaar dispatch: 30-90 days
+
+Fees:
+- Address update: Free (once in 10 years)
+- Other updates: ₹50 per update
+- Biometric update: Free
+
+Track Update Status:
+- Visit UIDAI website
+- Enter URN (Update Request Number)
+- Enter Aadhaar number
+- View current status

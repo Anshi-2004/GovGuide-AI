@@ -1,0 +1,140 @@
+RIGHT TO INFORMATION (RTI) ACT
+
+What is RTI:
+- Legal right to access government information
+- Enacted in 2005
+- Empowers citizens to ask questions to government offices
+- Government must reply within 30 days
+
+When to Use RTI:
+- Application status not updating
+- Delayed government services
+- Corruption or misconduct suspicion
+- Information about government schemes
+- Reasons for rejection not clear
+- Complaint not resolved
+
+Who Can File RTI:
+- Any Indian citizen
+- No age limit
+- No educational qualification required
+- Can be filed individually or through organization
+
+Information You Can Seek:
+- Status of your pending application
+- Reason for delay in service
+- Copies of documents in government records
+- Rules and procedures of schemes
+- Details of beneficiaries (in some cases)
+- Action taken on complaints
+
+Information You CANNOT Seek:
+- Personal information of third parties
+- Cabinet discussions
+- Information affecting national security
+- Trade secrets
+- Court records (file directly in court)
+
+How to File RTI:
+Step 1: Identify the Department
+- Find which office handles your query
+- Example: Education Dept for scholarships
+
+Step 2: Write RTI Application
+Format:
+---
+To,
+The Public Information Officer (PIO)
+[Department Name]
+[Address]
+
+Subject: RTI Application under Section 6(1)
+
+Dear Sir/Madam,
+
+I am a citizen of India and request the following information under RTI Act 2005:
+
+1. [Your specific question]
+2. [Second question if any]
+
+I am enclosing ₹10 as application fee via IPO/DD/Online.
+
+Name: [Your name]
+Address: [Complete address]
+Mobile: [Number]
+Date: [Date]
+---
+
+Step 3: Submit Application
+Methods:
+- Online: Through RTI portal (rtionline.gov.in)
+- Offline: By hand or post to PIO office
+- Pay ₹10 fee (IPO/DD for postal, online payment for portal)
+
+Step 4: Receive Acknowledgement
+- Note application number
+- PIO has 30 days to respond
+- If life/liberty issue: 48 hours
+
+Step 5: Response Analysis
+- If satisfied: Case closed
+- If not satisfied: File first appeal
+- If no response: File first appeal
+
+Fee Structure:
+- Application fee: ₹10
+- First appeal: No fee
+- Second appeal: No fee
+- Additional pages: ₹2 per page
+- BPL applicants: Free
+
+Common Mistakes to Avoid:
+- Asking vague questions ("Give all information about...")
+- Not specifying time period
+- Filing to wrong department
+- Not paying fee
+- Asking for opinions (ask facts only)
+- Writing emotional complaints (be factual)
+
+Sample RTI Questions:
+For Scholarship:
+"What is the current status of my scholarship application number [XXXX] submitted on [date]? If rejected, provide reasons with relevant rule citations."
+
+For Certificate Delay:
+"My income certificate application [number] was submitted on [date]. What is the current status? If under verification, which officer is assigned and expected completion date?"
+
+For Grievance:
+"I filed complaint number [XXXX] on [date] regarding [issue]. What action has been taken? Please provide copies of all correspondence and action taken reports."
+
+First Appeal Process:
+When to File:
+- No response in 30 days
+- Response is incomplete
+- Fee demanded is unreasonable
+- Information denied wrongly
+
+How to File:
+- Write to First Appellate Authority (FAA)
+- Mention original RTI details
+- Explain why you're dissatisfied
+- Submit within 30 days of response (or 30 days after due date if no response)
+- No fee required
+
+Second Appeal:
+- File with State/Central Information Commission
+- Within 90 days of First Appeal order
+- Can be done online through commission website
+- Commission's decision is final (can challenge in High Court)
+
+Timeline:
+- RTI response: 30 days
+- First appeal decision: 30-45 days
+- Second appeal hearing: 3-6 months
+
+Tips for Success:
+- Be specific and clear
+- One issue per RTI (don't club multiple issues)
+- Keep proof of submission
+- Follow up if no response
+- Quote specific sections if possible
+- Maintain professional tone
