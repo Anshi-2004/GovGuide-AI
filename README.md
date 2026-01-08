@@ -53,68 +53,6 @@ govguide-ai/
 └── requirements.txt           # Dependencies
 ```
 
-## 🛠️ Installation
-
-### Step 1: Clone or Download
-```bash
-# Create project directory
-mkdir govguide-ai
-cd govguide-ai
-```
-
-### Step 2: Create Virtual Environment
-```bash
-python -m venv venv
-
-# Activate (Windows)
-venv\Scripts\activate
-
-# Activate (Mac/Linux)
-source venv/bin/activate
-```
-
-### Step 3: Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### Step 4: Setup Environment Variables
-1. Create a `.env` file in the project root
-2. Add your OpenAI API key:
-```env
-OPENAI_API_KEY=sk-your-actual-key-here
-```
-
-**Get API Key**: https://platform.openai.com/api-keys
-
-### Step 5: Create Directory Structure
-```bash
-# Windows
-mkdir data\raw data\processed\embeddings src
-
-# Mac/Linux
-mkdir -p data/raw data/processed/embeddings src
-```
-
-### Step 6: Add Document Files
-Copy the 4 `.txt` files into `data/raw/`:
-- scholarship_info.txt
-- aadhaar_correction.txt
-- income_certificate.txt
-- rti_process.txt
-
-### Step 7: Run Setup
-```bash
-python setup.py
-```
-
-This will create embeddings from your documents.
-
-### Step 8: Launch Application
-```bash
-streamlit run app.py
-```
-
 ## 📖 Usage
 
 1. **Open the app** in your browser (usually http://localhost:8501)
@@ -146,53 +84,6 @@ streamlit run app.py
 ❌ Guarantee outcomes  
 ❌ Replace government officials  
 
-## 🎓 For College Projects
-
-### Project Report Tips:
-1. **Title**: Government Systems Awareness AI using RAG
-2. **Abstract**: Explain the problem and RAG solution
-3. **Architecture**: Include diagrams (User → Frontend → RAG → LLM)
-4. **Tech Stack**: Detail each technology choice
-5. **Implementation**: Show code snippets
-6. **Results**: Screenshots of Q&A examples
-7. **Future Work**: Multi-language, more schemes, mobile app
-
-### Presentation Tips:
-- Demo live with real questions
-- Show before/after (confusion → clarity)
-- Explain RAG importance (accuracy)
-- Discuss social impact
-- Show architecture diagram
-
-## 🔧 Customization
-
-### Add More Documents:
-1. Create new `.txt` file in `data/raw/`
-2. Follow the same format as existing files
-3. Run `python setup.py` again
-
-### Change LLM Model:
-Edit `src/config.py`:
-```python
-LLM_MODEL = "gpt-4"  # For better quality
-```
-
-### Adjust Response Style:
-Edit `SYSTEM_PROMPT` in `src/config.py`
-
-## 🐛 Troubleshooting
-
-### "OpenAI API key not found"
-→ Create `.env` file with your API key
-
-### "Embeddings not found"
-→ Run `python setup.py`
-
-### "Module not found"
-→ Install requirements: `pip install -r requirements.txt`
-
-### Slow responses
-→ Reduce `TOP_K_RESULTS` in `config.py` or use faster model
 
 ## 📊 Cost Estimation
 
@@ -216,9 +107,6 @@ Using GPT-4 increases cost by 10-20x.
 
 This is an educational project. Not for commercial use.
 
-## 🤝 Contributing
-
-This is a template project for students. Customize as needed for your college project.
 
 ## 📞 Support
 
