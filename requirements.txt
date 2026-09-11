@@ -1,0 +1,18 @@
+streamlit==1.32.0
+langchain==0.1.20
+langchain-community==0.0.38
+langchain-openai==0.1.1
+langchain-core>=0.1.0
+openai==1.14.0
+faiss-cpu==1.8.0
+sentence-transformers==2.5.1
+python-dotenv==1.0.1
+pypdf==4.0.1
+tiktoken==0.7.0
+pydantic==2.7.1
+transformers==4.38.0
+torch==2.2.0
+# Document processing
+pdfplumber>=0.10.0
+Pillow>=10.0.0
+pytesseract>=0.3.10
