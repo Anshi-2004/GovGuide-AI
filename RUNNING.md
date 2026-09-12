@@ -58,10 +58,12 @@ This installs:
 ## 🔑 Step 3 — Configure Your API Key
 
 1. Open the `.env` file in the project root (create it if it doesn't exist)
-2. Add your OpenAI API key:
+2. Get a free API key from [OpenRouter Keys](https://openrouter.ai/keys)
+3. Add your OpenRouter API key to `.env`:
 
 ```env
-OPENAI_API_KEY=sk-proj-your-key-here
+OPENROUTER_API_KEY=sk-or-v1-your-key-here
+LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free
 ```
 
 > [!CAUTION]
