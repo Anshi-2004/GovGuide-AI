@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, ExternalLink, FileText, CheckCircle2, AlertCircle, X, ShieldCheck } from 'lucide-react';
+import { Search, Filter, ExternalLink, FileText, CheckCircle2, AlertCircle, X, ShieldCheck, Landmark, ArrowRight, Award } from 'lucide-react';
 
 const STATES = [
   "All India", "Andhra Pradesh", "Assam", "Bihar", "Chhattisgarh",
@@ -19,6 +19,7 @@ export default function SchemeExplorer() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeModalScheme, setActiveModalScheme] = useState(null);
+  const [activeModalTab, setActiveModalTab] = useState('eligibility'); // eligibility, benefits, docs, process
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -52,170 +53,245 @@ export default function SchemeExplorer() {
 
   return (
     <div className="space-y-6">
-      {/* Top Banner & Filter Controls */}
-      <div className="glass-card p-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-          <div>
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              🏛️ Government Schemes Directory
+      {/* Top Banner & Search Header */}
+      <div className="glass-card p-6 border-l-4 border-l-amber-500">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="badge badge-saffron text-[10px] py-0.5 px-2">Verified Gazette Database</span>
+              <span className="text-xs text-slate-400">Section 4(1)(b) Disclosure</span>
+            </div>
+            <h2 className="text-xl font-extrabold text-white flex items-center gap-2">
+              <Landmark size={22} className="text-amber-400" />
+              National Government Schemes Directory
             </h2>
-            <p className="text-xs text-gray-400">
-              Discover eligible central and state government schemes, income limits, and mandatory application documents.
+            <p className="text-xs text-slate-400 max-w-2xl">
+              Explore eligible central and state government schemes, family income thresholds, reservation criteria, and mandatory application document checklists.
             </p>
           </div>
 
           <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-            <div className="relative">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <div className="relative flex-1 lg:w-72">
+              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search scheme name, eligibility..."
+                placeholder="Search by scheme name, keywords..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="form-input text-xs pl-9 pr-3 py-2.5 w-64 bg-gray-900"
+                className="form-input text-xs pl-9 pr-3 py-2.5 bg-slate-950 border-slate-800"
               />
             </div>
-            <button type="submit" className="btn-primary text-xs py-2.5 px-4">
-              Search
+            <button type="submit" className="btn-saffron text-xs py-2.5 px-4 shrink-0">
+              Search Schemes
             </button>
           </form>
         </div>
 
-        {/* Filter Badges Bar */}
-        <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-gray-800 text-xs">
-          <div className="flex items-center gap-1.5 font-semibold text-gray-400">
-            <Filter size={14} className="text-blue-400" />
-            <span>Filter by:</span>
+        {/* Filter Controls Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-800 text-xs">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-1.5 font-bold text-slate-300">
+              <Filter size={14} className="text-amber-400" />
+              <span>Demographic Filters:</span>
+            </div>
+
+            {/* State Selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-slate-400">Jurisdiction:</span>
+              <select
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                className="form-select text-xs py-1.5 px-3 bg-slate-950 border-slate-800"
+              >
+                {STATES.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          {/* State Filter */}
-          <div className="flex items-center gap-2">
-            <span className="text-gray-400">State:</span>
-            <select
-              value={selectedState}
-              onChange={(e) => setSelectedState(e.target.value)}
-              className="form-select text-xs py-1.5 px-3 bg-gray-900"
-            >
-              {STATES.map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Category Filter */}
-          <div className="flex items-center gap-2">
-            <span className="text-gray-400">Category:</span>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="form-select text-xs py-1.5 px-3 bg-gray-900"
-            >
-              {CATEGORIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
+          {/* Quick Category Chips */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                  selectedCategory === cat
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                    : 'bg-slate-950/70 border border-slate-800 text-slate-400 hover:text-white'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
       {/* Schemes Grid */}
       {loading ? (
-        <div className="p-12 text-center text-gray-400 text-sm glass-card">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          Fetching verified government schemes database...
+        <div className="p-16 text-center text-slate-400 text-xs glass-card space-y-3">
+          <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p>Connecting to Government Portal Database & Filtering Eligibility Matrix...</p>
         </div>
       ) : schemes.length === 0 ? (
-        <div className="p-12 text-center glass-card">
-          <AlertCircle size={36} className="text-amber-400 mx-auto mb-3 opacity-80" />
-          <h3 className="text-base font-semibold text-white">No Schemes Found</h3>
-          <p className="text-xs text-gray-400 mt-1">Try resetting state or category filters.</p>
+        <div className="p-16 text-center glass-card space-y-2">
+          <AlertCircle size={40} className="text-amber-400 mx-auto opacity-80" />
+          <h3 className="text-base font-bold text-white">No Schemes Found for Selected Criteria</h3>
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+            Try switching state to "All India" or setting category filter to "All" to view all available government initiatives.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {schemes.map((scheme) => (
             <div
               key={scheme.id}
-              className="glass-card p-5 flex flex-col justify-between hover:border-blue-500/40 transition-all cursor-pointer group"
-              onClick={() => setActiveModalScheme(scheme)}
+              className="glass-card p-5 flex flex-col justify-between hover:border-amber-500/40 transition-all cursor-pointer group"
+              onClick={() => {
+                setActiveModalScheme(scheme);
+                setActiveModalTab('eligibility');
+              }}
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="badge badge-blue">{scheme.category}</span>
-                  <span className="text-[11px] font-medium text-gray-400">{scheme.state}</span>
-                </div>
-
-                <h3 className="text-base font-bold text-white group-hover:text-blue-400 transition-colors mb-2">
-                  {scheme.name}
-                </h3>
-
-                <div className="mb-4">
-                  <span className="inline-block text-[11px] bg-amber-500/10 text-amber-300 border border-amber-500/20 px-2.5 py-1 rounded-md font-semibold">
-                    Income: {scheme.income_limit}
+                  <span className="badge badge-saffron">{scheme.category}</span>
+                  <span className="text-[11px] font-semibold text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                    {scheme.state}
                   </span>
                 </div>
 
-                <p className="text-xs text-gray-300 line-clamp-3 mb-4 leading-relaxed">
+                <h3 className="text-base font-bold text-white group-hover:text-amber-400 transition-colors mb-2 leading-snug">
+                  {scheme.name}
+                </h3>
+
+                <div className="mb-3">
+                  <span className="inline-flex items-center gap-1 text-[11px] bg-blue-950/60 text-blue-300 border border-blue-800/50 px-2.5 py-1 rounded-md font-semibold">
+                    <Award size={12} className="text-blue-400" />
+                    Max Income: {scheme.income_limit}
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-300 line-clamp-3 mb-4 leading-relaxed">
                   {scheme.eligibility}
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-gray-800 flex items-center justify-between text-xs text-blue-400 font-semibold group-hover:translate-x-1 transition-transform">
-                <span>View Full Details & Process</span>
-                <ExternalLink size={14} />
+              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-amber-400 font-semibold group-hover:translate-x-1 transition-transform">
+                <span>View Full Criteria & Documents</span>
+                <ArrowRight size={14} />
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Scheme Detail Popup Modal */}
+      {/* Tabbed Scheme Detail Modal Popup */}
       {activeModalScheme && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="glass-card max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+          <div className="glass-card max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 relative border-t-4 border-t-amber-500">
             <button
               onClick={() => setActiveModalScheme(null)}
-              className="absolute right-5 top-5 p-2 rounded-lg bg-gray-800 text-gray-400 hover:text-white"
+              className="absolute right-5 top-5 p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-colors"
+              title="Close Popup"
             >
               <X size={18} />
             </button>
 
-            <div className="flex items-center gap-2 mb-3">
-              <span className="badge badge-blue">{activeModalScheme.category}</span>
-              <span className="badge badge-green">{activeModalScheme.state}</span>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="badge badge-saffron">{activeModalScheme.category}</span>
+              <span className="badge badge-blue">{activeModalScheme.state}</span>
             </div>
 
-            <h2 className="text-xl font-bold text-white mb-4">{activeModalScheme.name}</h2>
+            <h2 className="text-xl font-extrabold text-white mb-4 pr-8">{activeModalScheme.name}</h2>
 
-            <div className="space-y-4 text-xs text-gray-300 leading-relaxed">
-              <div className="bg-gray-900/80 p-4 rounded-xl border border-gray-800">
-                <h4 className="font-bold text-white mb-1 uppercase tracking-wider text-[11px] text-blue-400">Eligibility Criteria</h4>
-                <p>{activeModalScheme.eligibility}</p>
-              </div>
+            {/* Modal Internal Tabs Header */}
+            <div className="flex border-b border-slate-800 mb-4 text-xs font-semibold">
+              <button
+                onClick={() => setActiveModalTab('eligibility')}
+                className={`py-2 px-3 border-b-2 transition-all ${
+                  activeModalTab === 'eligibility'
+                    ? 'border-amber-500 text-amber-400 font-bold'
+                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                Eligibility Criteria
+              </button>
+              <button
+                onClick={() => setActiveModalTab('benefits')}
+                className={`py-2 px-3 border-b-2 transition-all ${
+                  activeModalTab === 'benefits'
+                    ? 'border-amber-500 text-amber-400 font-bold'
+                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                Benefits & Coverage
+              </button>
+              <button
+                onClick={() => setActiveModalTab('docs')}
+                className={`py-2 px-3 border-b-2 transition-all ${
+                  activeModalTab === 'docs'
+                    ? 'border-amber-500 text-amber-400 font-bold'
+                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                Required Documents
+              </button>
+              <button
+                onClick={() => setActiveModalTab('process')}
+                className={`py-2 px-3 border-b-2 transition-all ${
+                  activeModalTab === 'process'
+                    ? 'border-amber-500 text-amber-400 font-bold'
+                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                How to Apply
+              </button>
+            </div>
 
-              <div className="bg-gray-900/80 p-4 rounded-xl border border-gray-800">
-                <h4 className="font-bold text-white mb-1 uppercase tracking-wider text-[11px] text-emerald-400">Benefits & Coverage</h4>
-                <p>{activeModalScheme.benefits}</p>
-              </div>
+            {/* Modal Tab Content */}
+            <div className="space-y-4 text-xs text-slate-300 min-h-[160px] leading-relaxed">
+              {activeModalTab === 'eligibility' && (
+                <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
+                  <h4 className="font-bold text-amber-400 uppercase tracking-wider text-[11px]">Eligibility Breakdown</h4>
+                  <p>{activeModalScheme.eligibility}</p>
+                  <div className="pt-2 text-[11px] text-slate-400">
+                    <strong>Income Limit:</strong> {activeModalScheme.income_limit}
+                  </div>
+                </div>
+              )}
 
-              <div className="bg-gray-900/80 p-4 rounded-xl border border-gray-800">
-                <h4 className="font-bold text-white mb-1 uppercase tracking-wider text-[11px] text-amber-400">Mandatory Documents</h4>
-                <p>{activeModalScheme.required_documents}</p>
-              </div>
+              {activeModalTab === 'benefits' && (
+                <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
+                  <h4 className="font-bold text-emerald-400 uppercase tracking-wider text-[11px]">Direct Financial / Public Benefits</h4>
+                  <p>{activeModalScheme.benefits}</p>
+                </div>
+              )}
 
-              <div className="bg-gray-900/80 p-4 rounded-xl border border-gray-800">
-                <h4 className="font-bold text-white mb-1 uppercase tracking-wider text-[11px] text-purple-400">How to Apply</h4>
-                <p>{activeModalScheme.application_process}</p>
-              </div>
+              {activeModalTab === 'docs' && (
+                <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
+                  <h4 className="font-bold text-blue-400 uppercase tracking-wider text-[11px]">Mandatory Document Checklist</h4>
+                  <p>{activeModalScheme.required_documents}</p>
+                </div>
+              )}
+
+              {activeModalTab === 'process' && (
+                <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
+                  <h4 className="font-bold text-purple-400 uppercase tracking-wider text-[11px]">Application Step-by-Step Guide</h4>
+                  <p>{activeModalScheme.application_process}</p>
+                </div>
+              )}
 
               {activeModalScheme.official_url && (
                 <a
                   href={activeModalScheme.official_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="btn-primary w-full justify-center text-xs py-3"
+                  className="btn-saffron w-full justify-center text-xs py-3 mt-2"
                 >
-                  <ExternalLink size={16} />
-                  <span>Visit Official Government Portal</span>
+                  <ExternalLink size={15} />
+                  <span>Open Official Application Portal</span>
                 </a>
               )}
             </div>
@@ -225,3 +301,4 @@ export default function SchemeExplorer() {
     </div>
   );
 }
+

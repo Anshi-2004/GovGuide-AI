@@ -1,19 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #0b0f19;
-  --bg-secondary: #111827;
-  --bg-card: rgba(17, 24, 39, 0.7);
-  --bg-card-border: rgba(255, 255, 255, 0.08);
-  --bg-hover: rgba(255, 255, 255, 0.05);
+  --bg-primary: #070d18;
+  --bg-secondary: #0f172a;
+  --bg-card: rgba(15, 23, 42, 0.75);
+  --bg-card-border: rgba(255, 255, 255, 0.1);
+  --bg-hover: rgba(255, 255, 255, 0.06);
   
-  --text-primary: #f9fafb;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
   
+  --gov-saffron: #f59e0b;
+  --gov-saffron-dark: #d97706;
+  --gov-navy: #1e3a8a;
+  --gov-navy-light: #3b82f6;
+  --gov-green: #10b981;
+  --gov-green-dark: #059669;
+
   --accent-primary: #3b82f6;
   --accent-primary-hover: #2563eb;
-  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  --accent-gradient: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #7c3aed 100%);
+  --accent-saffron-gradient: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
   --accent-emerald: #10b981;
   --accent-amber: #f59e0b;
   --accent-rose: #ef4444;
@@ -26,30 +34,43 @@
   --radius-lg: 18px;
   --radius-xl: 24px;
   
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-heading: 'Space Grotesk', var(--font-sans);
+  --font-sans: 'Inter', 'Plus Jakarta Sans', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', var(--font-sans);
+  --font-serif-hero: 'Lora', 'Merriweather', 'Georgia', serif;
 }
 
 [data-theme='light'] {
-  --bg-primary: #f8fafc;
+  --bg-primary: #f1f5f9;
   --bg-secondary: #ffffff;
-  --bg-card: rgba(255, 255, 255, 0.85);
-  --bg-card-border: rgba(0, 0, 0, 0.08);
-  --bg-hover: rgba(0, 0, 0, 0.04);
+  --bg-card: rgba(255, 255, 255, 0.92);
+  --bg-card-border: rgba(0, 0, 0, 0.12);
+  --bg-hover: rgba(0, 0, 0, 0.05);
   
   --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
   
-  --accent-primary: #2563eb;
-  --accent-primary-hover: #1d4ed8;
-  --accent-gradient: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  --accent-emerald: #059669;
-  --accent-amber: #d97706;
-  --accent-rose: #dc2626;
+  --accent-primary: #1d4ed8;
+  --accent-primary-hover: #1e40af;
+  --accent-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+  --accent-saffron-gradient: linear-gradient(135deg, #b45309 0%, #d97706 100%);
+  --accent-emerald: #047857;
+  --accent-amber: #b45309;
+  --accent-rose: #b91c1c;
   
-  --shadow-glow: 0 0 25px rgba(37, 99, 235, 0.12);
+  --shadow-glow: 0 0 25px rgba(30, 64, 175, 0.12);
   --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+}
+
+/* Font Scale Utilities for Accessibility */
+.font-scale-sm {
+  font-size: 92%;
+}
+.font-scale-md {
+  font-size: 100%;
+}
+.font-scale-lg {
+  font-size: 110%;
 }
 
 * {
@@ -68,6 +89,16 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* National Tricolor Top Banner Line */
+.gov-tricolor-bar {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(to right, #FF9933 0%, #FF9933 33.3%, #FFFFFF 33.3%, #FFFFFF 66.6%, #138808 66.6%, #138808 100%);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
 /* Background mesh glow */
 .bg-mesh {
   position: fixed;
@@ -78,28 +109,91 @@ body {
   z-index: -1;
   pointer-events: none;
   background: 
-    radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 85% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.04) 0%, transparent 60%);
+    radial-gradient(circle at 10% 10%, rgba(217, 119, 6, 0.06) 0%, transparent 45%),
+    radial-gradient(circle at 90% 15%, rgba(30, 58, 138, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 50% 85%, rgba(5, 150, 105, 0.05) 0%, transparent 60%);
 }
 
 .app-container {
-  max-width: 1280px;
+  max-width: 1380px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 1rem 1.5rem 2rem 1.5rem;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
 /* Typography */
+.font-serif-hero {
+  font-family: var(--font-serif-hero);
+}
+
 h1, h2, h3, h4, h5 {
   font-family: var(--font-heading);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
   color: var(--text-primary);
 }
 
-/* Glassmorphism Card */
+/* myAadhaar Pill Search Bar */
+.search-pill-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-secondary);
+  border: 2px solid rgba(124, 58, 237, 0.4);
+  border-radius: 9999px;
+  padding: 0.35rem 0.4rem 0.35rem 1.4rem;
+  box-shadow: 0 8px 25px -4px rgba(124, 58, 237, 0.15);
+  transition: all 0.25s ease;
+}
+
+.search-pill-bar:focus-within {
+  border-color: #8b5cf6;
+  box-shadow: 0 10px 30px -4px rgba(139, 92, 246, 0.3);
+}
+
+/* myAadhaar Action Circle Buttons */
+.action-circle-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.action-circle-card:hover {
+  transform: translateY(-4px);
+}
+
+.action-circle-icon {
+  width: 76px;
+  height: 76px;
+  border-radius: 9999px;
+  background: var(--bg-card);
+  border: 1px solid var(--bg-card-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.action-circle-card:hover .action-circle-icon {
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+h1 {
+  line-height: 1.25;
+}
+
+h2 {
+  line-height: 1.3;
+}
+
+/* Glassmorphism & Government Card */
 .glass-card {
   background: var(--bg-card);
   backdrop-filter: blur(16px);
@@ -119,21 +213,42 @@ h1, h2, h3, h4, h5 {
   background: var(--accent-gradient);
   color: #ffffff;
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1.4rem;
   border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+}
+
+.btn-saffron {
+  background: var(--accent-saffron-gradient);
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.4rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
+}
+
+.btn-saffron:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
 }
 
 .btn-secondary {
@@ -143,7 +258,7 @@ h1, h2, h3, h4, h5 {
   padding: 0.75rem 1.25rem;
   border-radius: var(--radius-md);
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -162,9 +277,9 @@ h1, h2, h3, h4, h5 {
   background: var(--bg-secondary);
   border: 1px solid var(--bg-card-border);
   color: var(--text-primary);
-  padding: 0.85rem 1.1rem;
+  padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-family: var(--font-sans);
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -177,22 +292,22 @@ h1, h2, h3, h4, h5 {
 
 .form-label {
   display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.78rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   color: var(--text-secondary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 }
 
-/* Status Badges */
+/* Status & Government Badges */
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   padding: 0.3rem 0.75rem;
   border-radius: 9999px;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -216,37 +331,44 @@ h1, h2, h3, h4, h5 {
   border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
+.badge-saffron {
+  background: rgba(217, 119, 6, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(217, 119, 6, 0.3);
+}
+
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out forwards;
+  animation: fadeIn 0.25s ease-out forwards;
 }
 
 /* Markdown formatting inside chat */
 .markdown-body h2 {
-  font-size: 1.15rem;
-  margin-top: 1.2rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  margin-top: 1.1rem;
+  margin-bottom: 0.4rem;
   color: var(--accent-primary);
   border-bottom: 1px solid var(--bg-card-border);
   padding-bottom: 0.3rem;
+  font-weight: 700;
 }
 
 .markdown-body ul, .markdown-body ol {
-  padding-left: 1.4rem;
+  padding-left: 1.3rem;
   margin-bottom: 0.8rem;
 }
 
 .markdown-body li {
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.3rem;
 }
 
 .markdown-body p {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.7rem;
 }
 
 .markdown-body code {
@@ -255,6 +377,27 @@ h1, h2, h3, h4, h5 {
   border-radius: 4px;
   font-size: 0.85em;
   color: var(--accent-emerald);
+  font-family: monospace;
+}
+
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.8rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.85rem;
+}
+
+.markdown-body th, .markdown-body td {
+  border: 1px solid var(--bg-card-border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.markdown-body th {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 /* Custom Scrollbar */
@@ -272,3 +415,15 @@ h1, h2, h3, h4, h5 {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
+
+/* Print styling for RTI drafts */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .app-container, .gov-tricolor-bar {
+    padding: 0 !important;
+  }
+}
+
