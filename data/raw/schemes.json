@@ -1,0 +1,80 @@
+[
+  {
+    "id": 1,
+    "name": "Post-Matric Scholarship Scheme for SC/ST/OBC",
+    "category": "SC (Scheduled Caste)",
+    "state": "All India",
+    "income_limit": "Below ₹2.5 Lakh",
+    "description": "Financial assistance to SC/ST/OBC students studying at post-matriculation or post-secondary stage to enable them to complete their education.",
+    "eligibility": "Must be Indian national belonging to SC/ST/OBC category, family annual income below ₹2.5 Lakh, studying in recognized institution.",
+    "benefits": "Complete maintenance allowance, fee reimbursement up to 100%, study tour charges, thesis typing charges.",
+    "documents": "Caste Certificate, Income Certificate issued by Revenue Authority, Previous Year Marksheet, Bank Account linked with Aadhaar, Fee Receipt.",
+    "process": "Apply via National Scholarship Portal (NSP) online at scholarships.gov.in. Verification is done by Institute, District, and State Authorities.",
+    "url": "https://scholarships.gov.in"
+  },
+  {
+    "id": 2,
+    "name": "Income Certificate Issuance & Verification Guidelines",
+    "category": "General",
+    "state": "All India",
+    "income_limit": "All Income Ranges",
+    "description": "Official proof of annual income issued by Revenue Department / Tehsildar office required for quota reservations, fee exemptions, and government welfare schemes.",
+    "eligibility": "Any resident family claiming eligible income bracket for government benefits.",
+    "benefits": "Valid proof of family income for 1 financial year across educational institutes, competitive exams, and government job applications.",
+    "documents": "Salary Certificate / Form 16 / Income Affidavit, Bank Passbook (6 months), Aadhaar Card, Residence Proof (Ration Card/Electricity Bill), Self-declaration form.",
+    "process": "Apply at e-District Portal of respective State or visit Meeseva / CSC center. Field inquiry by Revenue Inspector within 7–15 working days.",
+    "url": "https://edistrict.gov.in"
+  },
+  {
+    "id": 3,
+    "name": "Aadhaar Card Name, Address & DOB Correction Process",
+    "category": "General",
+    "state": "All India",
+    "income_limit": "No Income Limit",
+    "description": "Correction and update of demographic data (Name, Date of Birth, Gender, Address) and biometrics in UIDAI central database.",
+    "eligibility": "All Aadhaar number holders.",
+    "benefits": "Ensures document consistency across PAN, Passport, Ration Card, Bank Account, and Marksheets.",
+    "documents": "Name change: Gazette notification / Marriage Certificate / PAN card. Address: Bank Passbook, Electricity Bill, Voter ID. DOB: Birth Certificate, SSLC Marksheet.",
+    "process": "Online demographic updates on myAadhaar portal (myaadhaar.uidai.gov.in) or visit Aadhaar Seva Kendra for biometric validation.",
+    "url": "https://myaadhaar.uidai.gov.in"
+  },
+  {
+    "id": 4,
+    "name": "Right to Information (RTI) Filing Procedure",
+    "category": "General",
+    "state": "All India",
+    "income_limit": "No Income Limit",
+    "description": "Empowers Indian citizens to request information from any public authority, government department, or public sector undertaking.",
+    "eligibility": "Any citizen of India.",
+    "benefits": "Mandatory response from Public Information Officer (PIO) within 30 days. First and Second Appeal mechanisms against non-response.",
+    "documents": "Simple written application specifying questions clearly, proof of fee payment (₹10 postal order/online pay), BPL card if claiming fee exemption.",
+    "process": "Submit application online at rtionline.gov.in or send physical application with court fee stamp/demand draft to PIO of public department.",
+    "url": "https://rtionline.gov.in"
+  },
+  {
+    "id": 5,
+    "name": "PM Kisan Samman Nidhi (PM-KISAN)",
+    "category": "General",
+    "state": "All India",
+    "income_limit": "Below ₹2.5 Lakh",
+    "description": "Direct income support of ₹6,000 per year to all landholding farmer families across the country.",
+    "eligibility": "Landholding farmer families with cultivable land recorded in land records.",
+    "benefits": "₹6,000 annually paid in three installments of ₹2,000 directly to Aadhaar-seeded bank account.",
+    "documents": "Land record details (Khata/Khatian), Aadhaar Card, Aadhaar-linked Bank Account details, Active Mobile number.",
+    "process": "Self-registration on Farmers Corner on pmkisan.gov.in or via CSC. Complete mandatory face/OTP e-KYC.",
+    "url": "https://pmkisan.gov.in"
+  },
+  {
+    "id": 6,
+    "name": "Ayushman Bharat - PM Jan Arogya Yojana (PM-JAY)",
+    "category": "EWS (Economically Weaker Section)",
+    "state": "All India",
+    "income_limit": "Below ₹1 – 2.5 Lakh",
+    "description": "World's largest government-funded healthcare scheme providing secondary and tertiary care hospitalization coverage.",
+    "eligibility": "Families identified in SECC 2011 database under occupational or deprivation criteria.",
+    "benefits": "Cashless and paperless treatment up to ₹5 Lakh per family per year in empaneled hospitals.",
+    "documents": "Aadhaar Card, Ration Card, PM-JAY Family ID / Ayushman Card.",
+    "process": "Check eligibility on beneficiary.nha.gov.in or visit Ayushman Mitra kiosk at any empaneled hospital.",
+    "url": "https://beneficiary.nha.gov.in"
+  }
+]

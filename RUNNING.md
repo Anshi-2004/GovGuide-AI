@@ -1,225 +1,75 @@
-# 🏛️ GovGuide AI — How to Run
+# 🏛️ GovGuide AI — Modern Multi-Tier Stack (React + FastAPI + PostgreSQL + FAISS)
 
-A complete guide to setting up and running the GovGuide AI application on your local machine.
+GovGuide AI features a decoupled multi-tier architecture:
+- **Frontend**: React.js SPA (Vite + Tailwind CSS + Lucide icons) on `http://localhost:5173`
+- **Backend API**: FastAPI REST server on `http://localhost:8000`
+- **Database**: PostgreSQL (or auto SQLite fallback) for Schemes, Chat Audit Logs, and Feedback
+- **Vector DB**: FAISS vector retrieval engine powered by SentenceTransformers
+- **LLM Engine**: OpenAI / Gemini / OpenRouter RAG pipeline
 
----
-
-## ✅ Prerequisites
-
-Before you begin, make sure you have the following installed:
-
-| Requirement | Version | Check Command |
-|---|---|---|
-| Python | 3.8 or higher | `python --version` |
-| pip | Latest | `pip --version` |
-| Git | Any | `git --version` |
-
-> [!IMPORTANT]
-> You also need an **OpenAI API key** to run the AI assistant.
-> Get one at [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
-
----
-
-## 📁 Step 1 — Clone / Open the Project
-
-If you haven't already cloned the project:
-
-```bash
-git clone https://github.com/Anshi-2004/GovGuide-AI.git
-cd GovGuide-AI
+```
+Frontend (React.js) ──[REST API]──> Backend (FastAPI) ──┬──> PostgreSQL / SQLite
+                                                         ├──> FAISS (Vector DB)
+                                                         └──> LLM API (GPT / Gemini)
 ```
 
-Or simply open the folder in VS Code if you already have it locally.
-
 ---
 
-## 📦 Step 2 — Install Dependencies
-
-Run this command inside the project folder to install all required libraries:
+## ⚡ Quick Start (Launch Everything with 1 Command)
 
 ```bash
+# 1. Install Python dependencies
 pip install -r requirements.txt
+
+# 2. Build FAISS embeddings (one-time setup)
+python setup.py
+
+# 3. Launch both FastAPI Backend & React Frontend
+python run_app.py
 ```
 
-This installs:
-- `streamlit` — the web UI framework
-- `langchain`, `langchain-openai` — AI/RAG pipeline
-- `faiss-cpu` — vector database for document search
-- `sentence-transformers` — free HuggingFace embeddings
-- `pdfplumber` — PDF text extraction
-- `pytesseract`, `Pillow` — image OCR support
-- `python-dotenv` — environment variable loading
-
-> [!NOTE]
-> The first install may take a few minutes due to `torch` and `transformers` being large packages.
+Then open your browser to:
+- 🌐 **React Frontend**: [http://localhost:5173](http://localhost:5173)
+- ⚙️ **FastAPI Swagger Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- 🩺 **System Health Check**: [http://localhost:8000/api/health](http://localhost:8000/api/health)
 
 ---
 
-## 🔑 Step 3 — Configure Your API Key
+## 📦 Running Services Separately
 
-1. Open the `.env` file in the project root (create it if it doesn't exist)
-2. Get a free API key from [OpenRouter Keys](https://openrouter.ai/keys)
-3. Add your OpenRouter API key to `.env`:
+### 1. Run FastAPI Backend Server
+```bash
+python -m uvicorn backend.app.main:app --reload --port 8000
+```
+
+### 2. Run React Frontend Server
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+## 🗄️ PostgreSQL Database Configuration
+
+By default, GovGuide AI automatically uses a local SQLite database (`data/govguide.db`) for zero-config setup.
+
+To connect to a **PostgreSQL** database instance:
+Add `DATABASE_URL` to your `.env` file:
 
 ```env
+DATABASE_URL=postgresql://user:password@localhost:5432/govguidedb
 OPENROUTER_API_KEY=sk-or-v1-your-key-here
-LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free
-```
-
-> [!CAUTION]
-> Never commit your `.env` file to GitHub. It contains your private API key.
-> The `.gitignore` should already exclude it.
-
----
-
-## 🧠 Step 4 — Build the Knowledge Base (One-Time Setup)
-
-This step processes the government documents in `data/raw/` and creates
-the FAISS vector embeddings used for AI search.
-
-```bash
-python setup.py
-```
-
-**What it does:**
-1. Reads all `.txt` files from `data/raw/`
-2. Splits them into searchable chunks
-3. Creates embeddings using a **free** HuggingFace model (no API key needed for this step)
-4. Saves the vector store to `data/processed/embeddings/`
-
-> [!NOTE]
-> This only needs to be run **once**. Re-run it only if you add new documents to `data/raw/`.
-> The first run downloads the HuggingFace model (~90 MB) and may take 2–3 minutes.
-
-Expected output:
-```
-[*] Initializing HuggingFace embeddings...
-[OK] Embeddings generator initialized.
-[*] Creating embeddings for N chunks...
-[OK] Embeddings created.
-[OK] Embeddings saved to data/processed/embeddings
-Setup complete!
+LLM_MODEL=openai/gpt-4o-mini
 ```
 
 ---
 
-## 🚀 Step 5 — Run the Application
+## 🚀 Features Available in React UI
 
-```bash
-streamlit run app.py
-```
-
-The app will automatically open in your browser at:
-
-```
-http://localhost:8501
-```
-
-> [!TIP]
-> If the browser doesn't open automatically, copy-paste the URL above manually.
-
----
-
-## 🖥️ Using the Application
-
-Once the app is running:
-
-| Feature | How to Use |
-|---|---|
-| **Ask a Question** | Type in the text box and click **Get Answer** |
-| **Switch to Hindi** | Use the **Language / भाषा** dropdown in the sidebar |
-| **Set your Profile** | Select your **State**, **Category**, and **Income** in the sidebar for tailored answers |
-| **Upload a Document** | Expand **📎 Upload Document** and drop a PDF/image — click **Analyse** for AI review |
-| **View Sources** | Click **📚 View Sources** below any answer to see which document it came from |
-| **Give Feedback** | Click 👍 or 👎 below any answer — saved to `data/feedback.json` |
-| **Use Example Questions** | Click any question in the sidebar to auto-fill it |
-
----
-
-## 🏗️ Project Structure
-
-```
-govguide-ai/
-├── app.py                        ← Main Streamlit application
-├── setup.py                      ← One-time knowledge base builder
-├── requirements.txt              ← All dependencies
-├── .env                          ← Your API key (never commit this)
-│
-├── .streamlit/
-│   └── config.toml               ← Dark theme configuration
-│
-├── src/
-│   ├── config.py                 ← Settings, prompts, dropdown options
-│   ├── data_processor.py         ← Loads and splits documents
-│   ├── embeddings_generator.py   ← Creates/loads FAISS vector store
-│   ├── query_handler.py          ← RAG pipeline + LLM calls
-│   └── feedback_handler.py       ← Saves feedback to JSON
-│
-└── data/
-    ├── raw/                      ← Add your .txt knowledge documents here
-    │   ├── scholarship_info.txt
-    │   ├── aadhaar_correction.txt
-    │   ├── income_certificate.txt
-    │   └── rti_process.txt
-    ├── processed/
-    │   └── embeddings/           ← Auto-generated by setup.py
-    └── feedback.json             ← Auto-generated when users give feedback
-```
-
----
-
-## ➕ Adding New Topics
-
-To teach the AI about new government services:
-
-1. Create a new `.txt` file in `data/raw/` (e.g., `pan_card.txt`)
-2. Write the information in plain text — include rejection reasons, required documents, steps, helplines
-3. Re-run the setup script:
-   ```bash
-   python setup.py
-   ```
-4. Restart the Streamlit app
-
----
-
-## 🐛 Troubleshooting
-
-### `FileNotFoundError: No embeddings found`
-→ Run `python setup.py` first. The knowledge base hasn't been built yet.
-
-### `Authentication Error` / `Invalid API Key`
-→ Check your `.env` file. Make sure `OPENAI_API_KEY=sk-...` is correct with no extra spaces.
-
-### `ModuleNotFoundError: No module named 'pdfplumber'`
-→ Run `pip install pdfplumber` (or `pip install -r requirements.txt` again).
-
-### App is slow on first question
-→ Normal. The HuggingFace model loads into memory on the first query. Subsequent questions are faster.
-
-### OCR not working on images
-→ `pytesseract` requires the **Tesseract binary** to be installed separately:
-  - **Windows**: Download from [github.com/UB-Mannheim/tesseract](https://github.com/UB-Mannheim/tesseract/wiki)
-  - **macOS**: `brew install tesseract`
-  - **Linux**: `sudo apt install tesseract-ocr`
-
----
-
-## 💡 Quick Start (All Steps Combined)
-
-```bash
-# 1. Install dependencies
-pip install -r requirements.txt
-
-# 2. Add your API key to .env
-echo OPENAI_API_KEY=sk-your-key-here > .env
-
-# 3. Build the knowledge base (once)
-python setup.py
-
-# 4. Launch the app
-streamlit run app.py
-```
-
----
-
-*Made with ❤️ for Citizens of India | For Educational Purpose Only*
+1. **🤖 AI Assistant**: Ask questions about Indian government schemes, certificate applications, or rejection reasons with state/category/income profile filters.
+2. **🏛️ Government Schemes Explorer**: Filter and search verified schemes by state, social category (SC, ST, OBC, EWS, General), and income limits.
+3. **📄 Document Rejection Analyzer**: Paste rejection letters or notices for automated AI diagnosis and correction steps.
+4. **📜 RTI Application Builder**: Step-by-step RTI form builder generating legal drafts ready to copy or print.
+5. **📊 Community Feedback & System Stats**: Real-time telemetry on response accuracy, database persistence, and FAISS index chunks.

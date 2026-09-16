@@ -1,0 +1,50 @@
+====================================================================
+GOVGUIDE AI — GOVERNMENT SERVICES & PUBLIC PROCEDURES FREQUENTLY ASKED QUESTIONS (FAQs)
+====================================================================
+
+Q: Why was my scholarship application rejected?
+A: Common reasons for scholarship rejections include:
+1. Income certificate expired or issued by unauthorized officer (must be issued by Revenue Officer / Tehsildar).
+2. Name mismatch between Aadhaar card, bank passbook, and educational marksheet.
+3. Bank account not seeded with Aadhaar (Direct Benefit Transfer - DBT failure).
+4. Category certificate (SC/ST/OBC/EWS) lacking digital barcode/verification number.
+5. Incomplete biometric e-KYC on the National Scholarship Portal (NSP).
+Solution: Re-verify all names across documents, ensure bank account has active NPCI Aadhaar mapping, and upload updated certificates before institutional deadline.
+
+Q: How do I correct spelling errors in my Aadhaar Card?
+A:
+1. Visit myAadhaar online portal (myaadhaar.uidai.gov.in) or your nearest Aadhaar Seva Kendra.
+2. Submit a valid Proof of Identity (POI) document containing the correct spelling (such as PAN Card, Passport, Voter ID, or SSLC Marksheet).
+3. If changing full name due to marriage or legal name change, submit Gazette Notification or registered Marriage Certificate.
+4. Pay standard fee of ₹50 for demographic update.
+5. Track status using Update Request Number (URN) provided on the acknowledgment slip.
+
+Q: What is the procedure to file a Right to Information (RTI) query?
+A:
+1. Identify the public authority (Ministry/Department) holding the required information.
+2. Formulate concise, direct questions asking for specific records, documents, or status logs. Avoid seeking opinions or speculative advice.
+3. Visit rtionline.gov.in for Central Government departments or State RTI portals for state departments.
+4. Pay the application fee of ₹10 via UPI, Netbanking, or Postal Order (IPO). BPL cardholders are exempt from payment.
+5. Under Section 7(1) of RTI Act 2005, the Public Information Officer (PIO) must respond within 30 days.
+6. If response is delayed or unsatisfactory, file First Appeal within 30 days to First Appellate Authority.
+
+Q: How can I obtain an Income Certificate in my state?
+A:
+1. Apply online via your State e-District portal or visit nearest Common Service Center (CSC) / Meeseva / E-Seva.
+2. Documents required: Salary slip / Form 16 / Income Affidavit, Bank Statement (last 6 months), Aadhaar Card, Address Proof, and self-declaration of family income.
+3. Village Revenue Officer (VRO) or Revenue Inspector conducts field inquiry to verify income claims.
+4. Certificate is digitally signed by Tehsildar / Sub-Divisional Officer (SDO) and issued within 7 to 15 working days.
+5. Always check certificate validity (usually 1 financial year).
+
+Q: How do I resolve Aadhaar-Bank Account NPCI seeding issues for DBT?
+A:
+1. Visit your bank branch where your account is held.
+2. Submit "Aadhaar Seeding / NPCI Mapping Consent Form" along with self-attested copy of Aadhaar Card.
+3. Request bank officer to map your account with NPCI mapper for Direct Benefit Transfer (DBT).
+4. Verify status online on myAadhaar portal under "Bank Seeding Status".
+
+Q: What are the eligibility rules for Economically Weaker Section (EWS) reservation?
+A:
+1. Family gross annual income must be below ₹8.0 Lakh from all sources (salary, agriculture, business, profession) for the financial year prior to application.
+2. Exclusion criteria: Families holding 5 acres of agricultural land or above, residential flat of 1000 sq ft or above, or residential plot of 100 sq yards or above in notified municipalities.
+3. Certificate issuing authority: District Magistrate, Additional District Magistrate, Revenue Officer not below rank of Tehsildar.
