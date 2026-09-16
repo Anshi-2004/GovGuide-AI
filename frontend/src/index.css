@@ -141,16 +141,16 @@ h1, h2, h3, h4, h5 {
   display: flex;
   align-items: center;
   background: var(--bg-secondary);
-  border: 2px solid rgba(124, 58, 237, 0.4);
+  border: 2px solid rgba(124, 58, 237, 0.45);
   border-radius: 9999px;
-  padding: 0.35rem 0.4rem 0.35rem 1.4rem;
-  box-shadow: 0 8px 25px -4px rgba(124, 58, 237, 0.15);
+  padding: 0.5rem 0.6rem 0.5rem 1.6rem;
+  box-shadow: 0 10px 30px -4px rgba(124, 58, 237, 0.2);
   transition: all 0.25s ease;
 }
 
 .search-pill-bar:focus-within {
-  border-color: #8b5cf6;
-  box-shadow: 0 10px 30px -4px rgba(139, 92, 246, 0.3);
+  border-color: #a855f7;
+  box-shadow: 0 12px 35px -4px rgba(168, 85, 247, 0.35);
 }
 
 /* myAadhaar Action Circle Buttons */
@@ -160,29 +160,30 @@ h1, h2, h3, h4, h5 {
   align-items: center;
   text-align: center;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.25s ease;
+  width: 140px;
 }
 
 .action-circle-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
 }
 
 .action-circle-icon {
-  width: 76px;
-  height: 76px;
+  width: 84px;
+  height: 84px;
   border-radius: 9999px;
   background: var(--bg-card);
-  border: 1px solid var(--bg-card-border);
+  border: 2px solid var(--bg-card-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: all 0.25s ease;
 }
 
 .action-circle-card:hover .action-circle-icon {
-  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.25);
-  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 12px 30px rgba(168, 85, 247, 0.3);
+  border-color: rgba(168, 85, 247, 0.6);
 }
 
 h1 {
