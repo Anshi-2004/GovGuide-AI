@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Search, Bot, Landmark, FileSearch, Scale, ArrowRight, ShieldCheck, 
   Sparkles, ChevronLeft, ChevronRight, Lightbulb, CheckCircle2,
-  GraduationCap, Sprout, Stethoscope, Home, Briefcase, Users
+  GraduationCap, Sprout, Stethoscope, Home, Briefcase, Users, Landmark as OfficialEmblem
 } from 'lucide-react';
 
 export default function LandingPage({ setActiveTab }) {
@@ -44,6 +44,45 @@ export default function LandingPage({ setActiveTab }) {
       subtitle: 'Section 6(1) Draft',
       icon: Scale,
       color: 'text-purple-400 bg-purple-500/10 border-purple-500/30',
+    },
+  ];
+
+  const features = [
+    {
+      id: 'chat',
+      title: 'AI Citizen Assistant',
+      icon: Bot,
+      color: 'from-blue-600 to-indigo-600',
+      badge: 'General Q&A',
+      description: 'Ask any question about Central & State welfare schemes, caste certificates, income rules, and gazette guidelines.',
+      actionText: 'Start Asking Questions',
+    },
+    {
+      id: 'schemes',
+      title: 'Government Schemes Directory',
+      icon: Landmark,
+      color: 'from-amber-600 to-orange-600',
+      badge: '100+ Verified Schemes',
+      description: 'Browse, filter, and search verified government welfare schemes by state jurisdiction, caste category, and family income limits.',
+      actionText: 'Explore Schemes Directory',
+    },
+    {
+      id: 'document',
+      title: 'Document Analyzer & Document Q&A',
+      icon: FileSearch,
+      color: 'from-emerald-600 to-teal-600',
+      badge: 'Upload & Ask Document',
+      description: 'Paste or upload application rejection memos. Get automated diagnostics and ask targeted questions about your document.',
+      actionText: 'Analyze Rejection Document',
+    },
+    {
+      id: 'rti',
+      title: 'RTI Application Draft Builder',
+      icon: Scale,
+      color: 'from-purple-600 to-indigo-600',
+      badge: 'Section 6(1) RTI Act',
+      description: 'Generate legally formatted Right to Information (RTI) application letters to track delayed applications and hold officers accountable.',
+      actionText: 'Draft RTI Application',
     },
   ];
 
@@ -101,166 +140,149 @@ export default function LandingPage({ setActiveTab }) {
   };
 
   return (
-    <div className="space-y-16 py-6 animate-fade-in">
+    <div className="space-y-24 py-6 animate-fade-in text-center">
       
-      {/* myAadhaar Centered Hero Section */}
-      <section className="text-center max-w-4xl mx-auto space-y-8 pt-4 pb-4">
-        
-        {/* Badge & Serif Headline */}
-        <div className="space-y-4">
-          <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide">
+      {/* 1. HERO SECTION: BIG OUTER BOX WITH SMALL CENTERED INNER ELEMENTS */}
+      <section className="max-w-5xl mx-auto pt-6 sm:pt-10">
+        <div className="glass-card p-10 sm:p-14 md:p-16 border-t-4 border-t-amber-500 space-y-10 text-center relative overflow-hidden shadow-2xl">
+          
+          {/* Official Emblem Badge */}
+          <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide mx-auto">
             <Sparkles size={14} />
             <span>National Public Information & Government Schemes Portal</span>
           </div>
 
-          <h1 className="font-serif-hero text-4xl sm:text-5xl md:text-6xl font-normal text-white leading-tight">
-            Welcome to <span className="italic text-amber-400 font-serif-hero font-semibold">GovGuide AI</span>
-          </h1>
+          {/* CENTERED MAIN WEBSITE NAME */}
+          <div className="space-y-4">
+            <h1 className="font-serif-hero text-5xl sm:text-6xl md:text-7xl font-bold text-white tracking-tight leading-tight">
+              GovGuide <span className="italic text-amber-400 font-serif-hero font-semibold">AI</span>
+            </h1>
 
-          <p className="text-lg sm:text-xl text-slate-300 font-medium max-w-2xl mx-auto">
-            What do you want to do today ?
+            <p className="text-base sm:text-lg md:text-xl text-slate-300 font-medium max-w-2xl mx-auto leading-relaxed">
+              Simplifying Citizen Services, Gazette Welfare Schemes & RTI Legal Guidance
+            </p>
+          </div>
+
+          {/* CENTERED SEARCH BOX DIRECTLY BELOW MAIN WEBSITE NAME */}
+          <form onSubmit={handleSearchSubmit} className="max-w-2xl mx-auto pt-2">
+            <div className="search-pill-bar group">
+              <input
+                type="text"
+                placeholder="Search 100+ welfare schemes, document rejection fixes, RTI templates..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-transparent text-slate-100 placeholder-slate-400 text-sm sm:text-base outline-none pr-3 text-center"
+              />
+              <button
+                type="submit"
+                className="w-12 h-12 rounded-full bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center shrink-0 shadow-lg transition-transform group-hover:scale-105"
+                title="Search Portal"
+              >
+                <Search size={22} />
+              </button>
+            </div>
+          </form>
+
+          {/* CENTERED QUICK ACTION CIRCLES ROW */}
+          <div className="pt-6 border-t border-slate-800/80">
+            <div className="flex flex-wrap items-start justify-center gap-8 sm:gap-12 max-w-3xl mx-auto">
+              {quickActionCircles.map((circle) => {
+                const IconComp = circle.icon;
+                return (
+                  <div
+                    key={circle.id}
+                    onClick={() => setActiveTab(circle.id)}
+                    className="action-circle-card group text-center"
+                  >
+                    <div className={`action-circle-icon ${circle.color} mb-3 group-hover:border-amber-400`}>
+                      <IconComp size={30} />
+                    </div>
+                    <h4 className="text-xs sm:text-sm font-bold text-slate-100 group-hover:text-amber-400 transition-colors leading-snug">
+                      {circle.title}
+                    </h4>
+                    <span className="text-[11px] text-slate-400 mt-0.5 block">
+                      {circle.subtitle}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Background Ambient Glow */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-amber-500/10 via-purple-600/10 to-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+        </div>
+      </section>
+
+      {/* 2. CORE FEATURES GRID: BIG OUTER CONTAINER, 4 CENTERED CARDS */}
+      <section className="max-w-5xl mx-auto space-y-10">
+        
+        {/* Centered Section Header */}
+        <div className="text-center max-w-2xl mx-auto space-y-3">
+          <span className="badge badge-saffron text-xs py-1 px-3.5 mx-auto">OFFICIAL PORTAL SERVICES</span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-snug">
+            What You Can Do on GovGuide AI
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            Specialized AI tools designed for public scheme queries, document defect analysis, and RTI filings.
           </p>
         </div>
 
-        {/* Central Pill Search Bar */}
-        <form onSubmit={handleSearchSubmit} className="max-w-2xl mx-auto">
-          <div className="search-pill-bar group">
-            <input
-              type="text"
-              placeholder="Search government schemes, document rejection fixes, RTI templates..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent text-slate-100 placeholder-slate-400 text-sm sm:text-base outline-none pr-3"
-            />
-            <button
-              type="submit"
-              className="w-12 h-12 rounded-full bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center shrink-0 shadow-lg transition-transform group-hover:scale-105"
-              title="Search Portal"
-            >
-              <Search size={22} />
-            </button>
-          </div>
-        </form>
-
-        {/* Circular Quick Action Icons Row */}
-        <div className="pt-4">
-          <div className="flex flex-wrap items-start justify-center gap-8 md:gap-12 max-w-3xl mx-auto">
-            {quickActionCircles.map((circle) => {
-              const IconComp = circle.icon;
-              return (
-                <div
-                  key={circle.id}
-                  onClick={() => setActiveTab(circle.id)}
-                  className="action-circle-card group"
-                >
-                  <div className={`action-circle-icon ${circle.color} mb-3.5 group-hover:border-amber-400`}>
-                    <IconComp size={34} />
+        {/* 2x2 Centered Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {features.map((item) => {
+            const IconComponent = item.icon;
+            return (
+              <div
+                key={item.id}
+                className="glass-card p-8 sm:p-10 text-center flex flex-col items-center justify-between space-y-6 hover:border-amber-500/40 transition-all cursor-pointer group h-full"
+                onClick={() => setActiveTab(item.id)}
+              >
+                <div className="space-y-4 w-full flex flex-col items-center">
+                  
+                  {/* Small Compact Inner Icon Box */}
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center text-white shadow-md mx-auto`}>
+                    <IconComponent size={26} />
                   </div>
-                  <h4 className="text-sm font-bold text-slate-100 group-hover:text-amber-400 transition-colors leading-snug">
-                    {circle.title}
-                  </h4>
-                  <span className="text-[11px] text-slate-400 mt-1">
-                    {circle.subtitle}
-                  </span>
+
+                  <span className="badge badge-blue text-[11px] py-1 px-3 mx-auto">{item.badge}</span>
+
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors leading-snug">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-sm mx-auto">
+                      {item.description}
+                    </p>
+                  </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
 
-      </section>
-
-      {/* Spacious 2-Column Portal Services Grid */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-        
-        {/* Left Card (7 cols): Services Overview Card */}
-        <div className="lg:col-span-7 glass-card p-8 sm:p-10 flex flex-col justify-between border-l-4 border-l-purple-500 space-y-6 h-auto">
-          <div className="space-y-5">
-            <div className="inline-flex items-center gap-2.5 bg-purple-500/10 border border-purple-500/30 text-purple-300 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide">
-              <ShieldCheck className="text-purple-400" size={18} />
-              <span>GOVGUIDE AI OFFICIAL PORTAL</span>
-            </div>
-
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-snug">
-              Check all your GovGuide AI services in one place
-            </h2>
-
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Explore 100+ verified Central & State welfare schemes, diagnose application rejection reasons with automated contradiction checks, and generate printable Section 6(1) RTI applications.
-            </p>
-          </div>
-
-          <div className="pt-4 border-t border-slate-800/80 flex flex-wrap items-center gap-4">
-            <button
-              onClick={() => setActiveTab('chat')}
-              className="btn-primary py-3 px-6 text-sm font-bold flex items-center gap-2 shadow-lg"
-            >
-              <span>Launch AI Citizen Assistant</span>
-              <ArrowRight size={16} />
-            </button>
-            <button
-              onClick={() => setActiveTab('schemes')}
-              className="btn-secondary py-3 px-5 text-sm font-semibold"
-            >
-              <span>Explore All 100+ Schemes</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Right Cards (5 cols): Sidebar Widgets */}
-        <div className="lg:col-span-5 flex flex-col justify-between gap-6">
-          
-          {/* Widget 1: "Did you know ?" Trivia Card */}
-          <div className="bg-slate-900/90 border border-indigo-500/30 rounded-2xl p-8 space-y-4 relative overflow-hidden h-auto flex-1">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-wider">
-                <Lightbulb size={18} />
-                <span>Did you know ?</span>
+                <div className="pt-4 border-t border-slate-800/80 w-full flex items-center justify-center gap-2 text-xs text-amber-400 font-bold group-hover:translate-x-1 transition-transform">
+                  <span>{item.actionText}</span>
+                  <ArrowRight size={14} />
+                </div>
               </div>
-              <Sparkles size={20} className="text-amber-400 opacity-70" />
-            </div>
-
-            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium">
-              Under <strong className="text-amber-300">Section 6(1) of the RTI Act 2005</strong>, public information officers are legally obligated to respond to citizen applications within <strong className="text-emerald-400">30 calendar days</strong>.
-            </p>
-
-            <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-              <span>Verified Gazette Rules</span>
-              <span className="text-amber-400 font-bold hover:underline cursor-pointer" onClick={() => setActiveTab('rti')}>
-                Draft RTI Application →
-              </span>
-            </div>
-          </div>
-
-          {/* Widget 2: 100% Verified Gazette Rules Badge Card */}
-          <div className="glass-card p-6 border-l-4 border-l-emerald-500 flex items-start gap-4 h-auto">
-            <CheckCircle2 className="text-emerald-400 shrink-0 mt-0.5" size={24} />
-            <div className="space-y-1">
-              <h4 className="text-sm font-bold text-white">100% Verified Gazette Rules</h4>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                All scheme criteria, reservation brackets, and document rules are synchronized with active ministry gazette releases.
-              </p>
-            </div>
-          </div>
-
+            );
+          })}
         </div>
 
       </section>
 
-      {/* "Find Services relevant to you" Horizontal Category Grid */}
-      <section className="space-y-8 pt-4">
-        <div className="flex items-center justify-between">
-          <div>
+      {/* 3. SECTOR CATEGORIES: BIG CONTAINER, CENTERED CATEGORY CARDS */}
+      <section className="max-w-5xl mx-auto space-y-10 pt-4">
+        
+        {/* Centered Header with Nav Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="mx-auto sm:mx-0">
             <h2 className="font-serif-hero text-2xl sm:text-3xl font-normal text-white">
               Find Services relevant to you
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Explore welfare schemes by sector and category
+              Explore 100+ verified welfare schemes by category
             </p>
           </div>
 
-          {/* Navigation Controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mx-auto sm:mx-0">
             <button
               onClick={prevCategory}
               className="w-10 h-10 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center transition-colors"
@@ -278,7 +300,7 @@ export default function LandingPage({ setActiveTab }) {
           </div>
         </div>
 
-        {/* Category Cards Grid */}
+        {/* 3 Category Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {serviceCategories
             .slice(categoryIndex, categoryIndex + 3)
@@ -288,73 +310,76 @@ export default function LandingPage({ setActiveTab }) {
                 <div
                   key={idx}
                   onClick={() => setActiveTab('schemes')}
-                  className="glass-card p-8 flex flex-col justify-between space-y-6 hover:border-amber-500/40 transition-all cursor-pointer group h-auto min-h-[220px]"
+                  className="glass-card p-8 text-center flex flex-col items-center justify-between space-y-6 hover:border-amber-500/40 transition-all cursor-pointer group h-full min-h-[240px]"
                 >
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center text-white shadow-md`}>
-                        <CatIcon size={24} />
-                      </div>
-                      <span className="badge badge-amber text-xs py-1 px-2.5">
-                        {cat.count}
-                      </span>
+                  <div className="space-y-4 w-full flex flex-col items-center">
+                    
+                    {/* Small Inner Icon Badge */}
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${cat.color} flex items-center justify-center text-white shadow-md mx-auto`}>
+                      <CatIcon size={26} />
                     </div>
 
+                    <span className="badge badge-amber text-xs py-1 px-3 mx-auto">
+                      {cat.count}
+                    </span>
+
                     <div className="space-y-2">
-                      <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors leading-snug">
+                      <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-amber-400 transition-colors leading-snug">
                         {cat.title}
                       </h3>
-                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                      <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xs mx-auto">
                         {cat.desc}
                       </p>
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-amber-400 font-bold group-hover:translate-x-1 transition-transform">
+                  <div className="pt-4 border-t border-slate-800/80 w-full flex items-center justify-center gap-2 text-xs text-amber-400 font-bold group-hover:translate-x-1 transition-transform">
                     <span>View Category Schemes</span>
-                    <ArrowRight size={16} />
+                    <ArrowRight size={14} />
                   </div>
                 </div>
               );
             })}
         </div>
+
       </section>
 
-      {/* 3-Step Citizen Workflow Section */}
-      <section className="glass-card p-8 sm:p-10 border-l-4 border-l-amber-500 space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Simplified Public Process</span>
-            <h2 className="text-2xl font-extrabold text-white leading-snug">How Citizens Use GovGuide AI</h2>
-          </div>
-          <ShieldCheck size={32} className="text-emerald-400 hidden sm:block" />
+      {/* 4. 3-STEP WORKFLOW: BIG OUTER BOX, CENTERED STEP CARDS */}
+      <section className="max-w-5xl mx-auto glass-card p-10 sm:p-14 border-l-4 border-l-amber-500 space-y-10 text-center">
+        
+        {/* Centered Workflow Title */}
+        <div className="space-y-2 text-center max-w-2xl mx-auto">
+          <span className="text-xs font-bold uppercase tracking-wider text-amber-400 block">SIMPLIFIED CITIZEN PROCESS</span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white leading-snug">How Citizens Use GovGuide AI</h2>
         </div>
 
+        {/* 3 Centered Step Boxes */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-slate-950/80 p-8 rounded-2xl border border-slate-800 space-y-3 h-auto min-h-[190px]">
+          <div className="bg-slate-950/80 p-8 rounded-2xl border border-slate-800 text-center space-y-3 flex flex-col items-center">
             <span className="text-3xl font-black text-amber-400 block">01</span>
             <h4 className="text-base font-bold text-white leading-snug">Search or Select Category</h4>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Use the central pill search bar or filter schemes by state, social category, and income bracket.
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xs mx-auto">
+              Use the central pill search bar or filter schemes by state, category, and income bracket.
             </p>
           </div>
 
-          <div className="bg-slate-950/80 p-8 rounded-2xl border border-slate-800 space-y-3 h-auto min-h-[190px]">
+          <div className="bg-slate-950/80 p-8 rounded-2xl border border-slate-800 text-center space-y-3 flex flex-col items-center">
             <span className="text-3xl font-black text-amber-400 block">02</span>
             <h4 className="text-base font-bold text-white leading-snug">Ask AI or Analyze Notices</h4>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xs mx-auto">
               Get immediate gazette rule breakdowns or upload rejection memos to identify defect reasons.
             </p>
           </div>
 
-          <div className="bg-slate-950/80 p-8 rounded-2xl border border-slate-800 space-y-3 h-auto min-h-[190px]">
+          <div className="bg-slate-950/80 p-8 rounded-2xl border border-slate-800 text-center space-y-3 flex flex-col items-center">
             <span className="text-3xl font-black text-amber-400 block">03</span>
             <h4 className="text-base font-bold text-white leading-snug">Draft RTI & Resubmit</h4>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Generate legally formatted Section 6(1) RTI applications to track delays and resubmit applications.
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xs mx-auto">
+              Generate legally formatted Section 6(1) RTI applications to track delays and resubmit documents.
             </p>
           </div>
         </div>
+
       </section>
 
     </div>

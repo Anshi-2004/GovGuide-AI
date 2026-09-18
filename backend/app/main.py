@@ -211,7 +211,7 @@ def handle_chat_query(req: ChatRequest, db: Session = Depends(get_db)):
     session_id = req.session_id or f"sess-{uuid.uuid4().hex[:8]}"
 
     # Execute RAG query pipeline
-    result = query_handler.answer_question(
+    result = query_handler.get_answer(
         question=req.question,
         document_text=req.document_text,
         user_context=user_ctx,

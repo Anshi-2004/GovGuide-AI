@@ -136,7 +136,6 @@ class QueryHandler:
         language: str = "English",
     ) -> Dict:
         """Answer a question using RAG. Always returns a valid dict."""
-
         if not self._llm_available:
             msg = self._init_error or "LLM unavailable."
             if "api_key" in msg.lower() or "not set" in msg.lower():
@@ -176,6 +175,9 @@ class QueryHandler:
 
         except Exception as exc:
             return self._handle_error(exc)
+
+    # Alias for API compatibility
+    answer_question = get_answer
 
     # ── Error handling ────────────────────────────────────────────────────────
 
