@@ -57,6 +57,28 @@ html, body, [class*="css"] {
 [data-testid="stSidebar"]        { display: none !important; }
 [data-testid="collapsedControl"] { display: none !important; }
 
+/* ── FULL-WIDTH: Remove Streamlit default padding ────────── */
+.block-container {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+[data-testid="stMainBlockContainer"] {
+    max-width: 100% !important;
+    padding: 0 !important;
+}
+[data-testid="stMain"] {
+    padding: 0 !important;
+}
+/* Inner content gets horizontal padding for readability */
+.gov-content-wrapper {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0.8rem 2rem;
+}
+
 /* ══════════════════════════════════════════════════════════════
    TOP UTILITY BAR — White with emblem & branding
    ══════════════════════════════════════════════════════════════ */
@@ -1199,45 +1221,39 @@ def render_home_panel(fb_handler, is_hindi: bool):
 # ─── Quick Services Grid ──────────────────────────────────────────────────────
 
 def render_quick_services(is_hindi: bool):
-    """Grid of clickable service cards for common questions."""
+    """Grid of clickable service cards using Streamlit buttons."""
     services = [
-        {"icon": "🎓", "bg": "gov-service-icon-blue",
+        {"icon": "🎓",
          "name": "Scholarship Help" if not is_hindi else "छात्रवृत्ति सहायता",
          "desc": "Why rejected? How to apply?" if not is_hindi else "अस्वीकार क्यों? आवेदन कैसे?",
          "q": "मेरी छात्रवृत्ति क्यों अस्वीकार हुई?" if is_hindi else "Why was my scholarship rejected?"},
-        {"icon": "🆔", "bg": "gov-service-icon-green",
+        {"icon": "🆔",
          "name": "Aadhaar Services" if not is_hindi else "आधार सेवाएं",
          "desc": "Name correction, update, link" if not is_hindi else "नाम सुधार, अपडेट, लिंक",
          "q": "आधार में नाम कैसे सुधारें?" if is_hindi else "How to correct my name in Aadhaar?"},
-        {"icon": "📄", "bg": "gov-service-icon-orange",
+        {"icon": "📄",
          "name": "Certificates" if not is_hindi else "प्रमाण पत्र",
          "desc": "Income, caste, domicile docs" if not is_hindi else "आय, जाति, अधिवास दस्तावेज",
          "q": "आय प्रमाण पत्र के लिए क्या दस्तावेज चाहिए?" if is_hindi else "What documents needed for income certificate?"},
-        {"icon": "📜", "bg": "gov-service-icon-purple",
+        {"icon": "📜",
          "name": "RTI Filing" if not is_hindi else "RTI दाखिल करें",
          "desc": "How to file & track RTI" if not is_hindi else "RTI कैसे दाखिल करें और ट्रैक करें",
          "q": "RTI आवेदन कैसे करें?" if is_hindi else "How to file an RTI application?"},
     ]
 
-    cards_html = ""
-    for s in services:
-        cards_html += f"""
-        <div class="gov-service-card" data-question="{s['q']}">
-            <div class="gov-service-icon {s['bg']}">{s['icon']}</div>
-            <div class="gov-service-name">{s['name']}</div>
-            <div class="gov-service-desc">{s['desc']}</div>
-        </div>
-        """
-
     section_title = "त्वरित सेवाएं" if is_hindi else "Quick Services"
-    st.markdown(f'<div class="gov-section-title">🚀 {section_title}</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="gov-service-grid">{cards_html}</div>', unsafe_allow_html=True)
+    st.markdown(f'<p class="gov-section-title">🚀 {section_title}</p>', unsafe_allow_html=True)
 
-    # Streamlit buttons for actual interactivity
-    cols = st.columns(len(services))
+    cols = st.columns(len(services), gap="medium")
     for i, (col, s) in enumerate(zip(cols, services)):
         with col:
-            if st.button(f"{s['icon']} {s['name']}", key=f"svc_{i}", use_container_width=True):
+            st.markdown(
+                f'<p style="font-size:1.8rem;margin:0 0 4px;">{s["icon"]}</p>'
+                f'<p style="font-weight:600;color:#1E293B;font-size:0.88rem;margin:0 0 2px;">{s["name"]}</p>'
+                f'<p style="color:#64748B;font-size:0.78rem;margin:0 0 10px;">{s["desc"]}</p>',
+                unsafe_allow_html=True,
+            )
+            if st.button(f"Ask about {s['name']}" if not is_hindi else f"{s['name']} पूछें", key=f"svc_{i}", use_container_width=True):
                 st.session_state.prefill_question = s['q']
                 st.rerun()
 
@@ -1302,9 +1318,13 @@ def main():
     render_hero(is_hindi)
 
     # ════════════════════════════════════════════════════════════════
+    # CONTENT WRAPPER START — centered content with padding
+    # ════════════════════════════════════════════════════════════════
+    st.markdown('<div class="gov-content-wrapper">', unsafe_allow_html=True)
+
+    # ════════════════════════════════════════════════════════════════
     # ACTION BUTTONS ROW: [Home] [How to Use]
     # ════════════════════════════════════════════════════════════════
-    st.markdown("<br>", unsafe_allow_html=True)
     btn_c1, btn_c2, btn_spacer = st.columns([1.5, 1.5, 5])
 
     with btn_c1:
@@ -1563,6 +1583,11 @@ def main():
 
             if ri < len(st.session_state.chat_history) - 1:
                 st.divider()
+
+    # ════════════════════════════════════════════════════════════════
+    # CONTENT WRAPPER END
+    # ════════════════════════════════════════════════════════════════
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # ════════════════════════════════════════════════════════════════
     # FOOTER
