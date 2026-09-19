@@ -1,6 +1,7 @@
 """
 GovGuide AI — Main Streamlit Application
 A Government Systems & Public Services AI Assistant for Indian Citizens
+Redesigned with Indian Government Portal aesthetics
 """
 
 import io
@@ -31,187 +32,768 @@ except ImportError:
 
 # ─── Page configuration ────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="GovGuide AI",
+    page_title="GovGuide AI — Government Services Assistant",
     page_icon="🏛️",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-# ─── Styling ───────────────────────────────────────────────────────────────────
+# ─── Government Portal Styling ────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-html, body, [class*="css"] { font-family: 'Inter', sans-serif !important; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
 
-/* ── Global background ───────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════
+   RESET & GLOBAL
+   ══════════════════════════════════════════════════════════════ */
+html, body, [class*="css"] {
+    font-family: 'Inter', 'Noto Sans Devanagari', sans-serif !important;
+}
 .stApp {
-    background: linear-gradient(135deg, #0f0c29 0%, #302b63 55%, #1a1040 100%);
+    background: #F0F2F5 !important;
     min-height: 100vh;
 }
 #MainMenu, footer, header { visibility: hidden; }
-
-/* ── Hide Streamlit sidebar completely ───────────────────────── */
 [data-testid="stSidebar"]        { display: none !important; }
 [data-testid="collapsedControl"] { display: none !important; }
 
-/* ── Hero card ───────────────────────────────────────────────── */
-.govguide-hero {
-    text-align: center;
-    padding: 1.5rem 1.5rem 1.1rem;
-    background: linear-gradient(145deg, rgba(102,126,234,0.10), rgba(240,147,251,0.06));
-    border: 1px solid rgba(102,126,234,0.25);
-    border-radius: 20px;
-    backdrop-filter: blur(12px);
+/* ══════════════════════════════════════════════════════════════
+   TOP UTILITY BAR — White with emblem & branding
+   ══════════════════════════════════════════════════════════════ */
+.gov-top-bar {
+    background: #FFFFFF;
+    border-bottom: 3px solid #F4A020;
+    padding: 10px 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: -1rem -1rem 0 -1rem;
+    position: relative;
+    z-index: 100;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
-.govguide-hero h1 {
+.gov-top-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.gov-emblem {
     font-size: 2.4rem;
+    line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
+}
+.gov-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.gov-brand-hi {
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #1D3557;
+    line-height: 1.2;
+}
+.gov-brand-en {
+    font-size: 0.92rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #a78bfa, #818cf8, #c084fc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin: 0 0 0.3rem;
+    color: #1D3557;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
 }
-.govguide-hero p { color: rgba(220,220,255,0.70); font-size: 0.98rem; margin: 0; }
-
-/* ── Header button wrappers ──────────────────────────────────── */
-/* "How to Use" — top left, soft purple outline */
-.how-btn button {
-    background: rgba(129,140,248,0.10) !important;
-    border: 1px solid rgba(129,140,248,0.40) !important;
-    color: #a5b4fc !important;
-    font-weight: 600 !important;
-    border-radius: 12px !important;
-    padding: 0.5rem 0.9rem !important;
-    width: 100% !important;
-    transition: all 0.2s !important;
+.gov-brand-sub {
+    font-size: 0.72rem;
+    color: #64748B;
+    font-weight: 400;
+    line-height: 1.3;
 }
-.how-btn button:hover {
-    background: rgba(129,140,248,0.22) !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 16px rgba(129,140,248,0.25) !important;
+.gov-top-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
-
-/* "Home" — top right, gradient fill */
-.home-btn button {
-    background: linear-gradient(135deg, #667eea, #764ba2) !important;
-    border: none !important;
-    color: white !important;
-    font-weight: 600 !important;
-    border-radius: 12px !important;
-    padding: 0.5rem 0.9rem !important;
-    width: 100% !important;
-    box-shadow: 0 4px 18px rgba(102,126,234,0.40) !important;
-    transition: all 0.2s !important;
-}
-.home-btn button:hover {
-    box-shadow: 0 6px 24px rgba(102,126,234,0.55) !important;
-    transform: translateY(-1px) !important;
-}
-
-/* ── Panel slide-in animation ────────────────────────────────── */
-@keyframes panelIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-.panel-anim { animation: panelIn 0.22s ease; }
-
-/* ── Home panel inner grid ───────────────────────────────────── */
-.home-section-title {
+.gov-a-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 4px;
     font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid #CBD5E1;
+    transition: all 0.15s;
+}
+.gov-a-btn:hover { background: #E2E8F0; }
+.gov-a-sm { font-size: 0.68rem; background: #F8FAFC; color: #475569; }
+.gov-a-md { font-size: 0.82rem; background: #1D3557; color: #FFFFFF; }
+.gov-a-lg { font-size: 0.92rem; background: #F8FAFC; color: #475569; }
+.gov-contrast-btn {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 2px solid #94A3B8;
+    background: linear-gradient(135deg, #1E293B 50%, #F8FAFC 50%);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.gov-contrast-btn:hover { border-color: #1D3557; }
+
+/* ══════════════════════════════════════════════════════════════
+   NAVIGATION BAR — Deep navy with white text
+   ══════════════════════════════════════════════════════════════ */
+.gov-nav-bar {
+    background: linear-gradient(180deg, #1D3557 0%, #16293F 100%);
+    padding: 0 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 -1rem;
+    position: relative;
+    z-index: 99;
+    box-shadow: 0 2px 8px rgba(29,53,87,0.25);
+}
+.gov-nav-links {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    height: 44px;
+}
+.gov-nav-item {
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    color: #E8ECF1;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-bottom: 3px solid transparent;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+.gov-nav-item:hover {
+    background: rgba(255,255,255,0.08);
+    color: #FFFFFF;
+    border-bottom-color: #F4A020;
+}
+.gov-nav-active {
+    background: rgba(255,255,255,0.10) !important;
+    color: #FFFFFF !important;
+    border-bottom-color: #F4A020 !important;
+    font-weight: 600;
+}
+.gov-nav-search {
+    display: flex;
+    align-items: center;
+}
+.gov-search-icon {
+    background: #F4A020;
+    color: #1D3557;
+    width: 44px; height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.gov-search-icon:hover { background: #E8950F; }
+
+/* ══════════════════════════════════════════════════════════════
+   ANNOUNCEMENT TICKER
+   ══════════════════════════════════════════════════════════════ */
+.gov-ticker {
+    background: linear-gradient(90deg, #EEF2FF, #F0F7FF);
+    border-bottom: 1px solid #C7D2FE;
+    padding: 8px 2.5rem;
+    margin: 0 -1rem;
+    overflow: hidden;
+    position: relative;
+    z-index: 98;
+}
+.gov-ticker-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.gov-ticker-label {
+    background: #1D3557;
+    color: #FFFFFF;
+    padding: 3px 12px;
+    border-radius: 3px;
+    font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.6px;
-    color: rgba(165,180,252,0.65);
-    margin-bottom: 0.5rem;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
-
-/* ── Topic pill ──────────────────────────────────────────────── */
-.pill {
+.gov-ticker-content {
+    overflow: hidden;
+    white-space: nowrap;
+    flex: 1;
+}
+.gov-ticker-scroll {
     display: inline-block;
-    background: rgba(129,140,248,0.12);
-    border: 1px solid rgba(129,140,248,0.25);
-    border-radius: 20px;
-    padding: 0.18rem 0.65rem;
-    font-size: 0.78rem;
-    color: #a5b4fc;
-    margin: 0.15rem;
+    animation: tickerScroll 35s linear infinite;
+    color: #1E40AF;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+.gov-ticker-scroll span {
+    margin-right: 60px;
+}
+@keyframes tickerScroll {
+    0%   { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+.gov-ticker-controls {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+.gov-ticker-btn {
+    width: 24px; height: 24px;
+    border: 1px solid #93C5FD;
+    border-radius: 3px;
+    background: #FFFFFF;
+    color: #1D4ED8;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
-/* ── Question bubble ─────────────────────────────────────────── */
-.q-bubble {
-    background: linear-gradient(135deg, rgba(102,126,234,0.16), rgba(129,140,248,0.08));
-    border: 1px solid rgba(102,126,234,0.28);
-    border-radius: 14px;
-    padding: 0.9rem 1.1rem;
-    margin-bottom: 0.5rem;
-    color: #c7d2fe;
-    font-weight: 500;
+/* ══════════════════════════════════════════════════════════════
+   HERO BANNER — Government style
+   ══════════════════════════════════════════════════════════════ */
+.gov-hero {
+    background: linear-gradient(135deg, #1D3557 0%, #264573 40%, #1A5276 70%, #1D3557 100%);
+    border-radius: 0;
+    padding: 2.2rem 2.5rem 2rem;
+    margin: 0 -1rem;
+    position: relative;
+    overflow: hidden;
+}
+.gov-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 300px; height: 100%;
+    background: radial-gradient(ellipse at right center, rgba(244,160,32,0.12), transparent 70%);
+    pointer-events: none;
+}
+.gov-hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #F4A020, #E8950F, #FF6B35, #F4A020);
+}
+.gov-hero-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    position: relative;
+    z-index: 1;
+}
+.gov-hero-text { flex: 1; }
+.gov-hero-text h1 {
+    color: #FFFFFF;
+    font-size: 1.9rem;
+    font-weight: 800;
+    margin: 0 0 6px;
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+}
+.gov-hero-text h1 span {
+    color: #F4A020;
+}
+.gov-hero-text p {
+    color: rgba(255,255,255,0.78);
     font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.5;
+}
+.gov-hero-stats {
+    display: flex;
+    gap: 16px;
+    flex-shrink: 0;
+}
+.gov-hero-stat {
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 14px 20px;
+    text-align: center;
+    min-width: 100px;
+}
+.gov-hero-stat-num {
+    color: #F4A020;
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.gov-hero-stat-label {
+    color: rgba(255,255,255,0.72);
+    font-size: 0.72rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CONTENT SECTION
+   ══════════════════════════════════════════════════════════════ */
+.gov-section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1D3557;
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+    border-bottom: 3px solid #F4A020;
+    display: inline-block;
+}
+.gov-card {
+    background: #FFFFFF;
+    border-radius: 8px;
+    padding: 1.4rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03);
+    margin-bottom: 1rem;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.gov-card:hover {
+    box-shadow: 0 4px 16px rgba(29,53,87,0.10);
+}
+.gov-card-accent {
+    border-left: 4px solid #1D3557;
+}
+.gov-card-info {
+    border-left: 4px solid #3B82F6;
+    background: #F8FAFF;
+}
+.gov-card-warning {
+    border-left: 4px solid #F59E0B;
+    background: #FFFBEB;
+}
+.gov-card-success {
+    border-left: 4px solid #10B981;
+    background: #F0FDF4;
+}
+.gov-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1D3557;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.gov-card-body {
+    color: #475569;
+    font-size: 0.88rem;
+    line-height: 1.6;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   QUICK SERVICE CARDS — grid of example questions
+   ══════════════════════════════════════════════════════════════ */
+.gov-service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-top: 12px;
+}
+.gov-service-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: block;
+}
+.gov-service-card:hover {
+    border-color: #1D3557;
+    box-shadow: 0 4px 14px rgba(29,53,87,0.12);
+    transform: translateY(-2px);
+}
+.gov-service-icon {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+}
+.gov-service-icon-blue   { background: #EFF6FF; }
+.gov-service-icon-green  { background: #F0FDF4; }
+.gov-service-icon-orange { background: #FFF7ED; }
+.gov-service-icon-purple { background: #F5F3FF; }
+.gov-service-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1E293B;
+    margin-bottom: 4px;
+}
+.gov-service-desc {
+    font-size: 0.75rem;
+    color: #64748B;
+    line-height: 1.4;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   QUESTION AREA
+   ══════════════════════════════════════════════════════════════ */
+.gov-question-card {
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid #E2E8F0;
+    margin: 1rem 0;
+}
+.gov-question-header {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1D3557;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CHAT HISTORY
+   ══════════════════════════════════════════════════════════════ */
+.gov-q-bubble {
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-left: 4px solid #1D3557;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin-bottom: 8px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: 1rem;
 }
-.q-time { color: rgba(200,210,255,0.35); font-size: 0.78rem; white-space: nowrap; }
-
-/* ── Source citation ─────────────────────────────────────────── */
-.src-card {
-    background: rgba(255,255,255,0.03);
-    border-left: 3px solid #818cf8;
-    border-radius: 0 8px 8px 0;
-    padding: 0.6rem 0.9rem;
-    margin: 0.35rem 0;
-    font-size: 0.83rem;
+.gov-q-text {
+    color: #1E293B;
+    font-weight: 600;
+    font-size: 0.92rem;
+    flex: 1;
 }
-.src-name { color: #a5b4fc; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
-.src-snip { color: rgba(200,210,255,0.52); font-style: italic; margin-top: 0.25rem; }
+.gov-q-time {
+    color: #94A3B8;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+.gov-answer-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 1.3rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
 
-/* ── Feedback ────────────────────────────────────────────────── */
-.fb-thanks { color: #86efac; font-size: 0.8rem; }
+/* ══════════════════════════════════════════════════════════════
+   SOURCE CITATION
+   ══════════════════════════════════════════════════════════════ */
+.gov-src-card {
+    background: #F8FAFC;
+    border-left: 3px solid #3B82F6;
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    margin: 6px 0;
+}
+.gov-src-name {
+    color: #1D4ED8;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+.gov-src-snip {
+    color: #64748B;
+    font-style: italic;
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
 
-/* ── Doc badge ───────────────────────────────────────────────── */
-.doc-badge {
-    background: linear-gradient(135deg, rgba(192,132,252,0.15), rgba(129,140,248,0.10));
-    border: 1px solid rgba(192,132,252,0.28);
-    border-radius: 9px;
-    padding: 0.4rem 0.8rem;
+/* ══════════════════════════════════════════════════════════════
+   DOCUMENT UPLOAD AREA
+   ══════════════════════════════════════════════════════════════ */
+.gov-upload-info {
+    background: #F0F7FF;
+    border: 1px dashed #93C5FD;
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: #1E40AF;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.gov-doc-badge {
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-radius: 6px;
+    padding: 8px 14px;
     font-size: 0.82rem;
-    color: #e9d5ff;
-    margin: 0.5rem 0 0.8rem;
+    color: #1D4ED8;
+    margin: 8px 0 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PANELS (Help / Home)
+   ══════════════════════════════════════════════════════════════ */
+@keyframes panelSlideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.gov-panel {
+    animation: panelSlideIn 0.25s ease;
+    background: #FFFFFF;
+    border-radius: 10px;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin: 1rem 0;
+    overflow: hidden;
+}
+.gov-panel-header {
+    background: linear-gradient(135deg, #1D3557, #264573);
+    color: #FFFFFF;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.gov-panel-body {
+    padding: 1.2rem;
+}
+.gov-panel-section-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #64748B;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #F4A020;
     display: inline-block;
 }
 
-/* ── Upload hint ─────────────────────────────────────────────── */
-.upload-info {
-    background: rgba(129,140,248,0.07);
-    border: 1px dashed rgba(129,140,248,0.30);
-    border-radius: 12px;
-    padding: 0.85rem 1rem;
-    color: rgba(200,210,255,0.7);
-    font-size: 0.88rem;
-    margin-bottom: 0.6rem;
+/* ══════════════════════════════════════════════════════════════
+   TOPIC PILLS
+   ══════════════════════════════════════════════════════════════ */
+.gov-pill {
+    display: inline-block;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.78rem;
+    color: #1D4ED8;
+    font-weight: 500;
+    margin: 3px;
+    transition: all 0.15s;
+}
+.gov-pill:hover {
+    background: #1D3557;
+    color: #FFFFFF;
+    border-color: #1D3557;
 }
 
-/* ── Metric ──────────────────────────────────────────────────── */
-[data-testid="metric-container"] {
-    background: rgba(129,140,248,0.08);
-    border: 1px solid rgba(129,140,248,0.18);
-    border-radius: 10px;
-    padding: 0.5rem 0.8rem !important;
+/* ══════════════════════════════════════════════════════════════
+   BUTTONS — Government style
+   ══════════════════════════════════════════════════════════════ */
+.gov-btn-primary button {
+    background: linear-gradient(180deg, #1D3557 0%, #16293F 100%) !important;
+    border: none !important;
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    padding: 0.55rem 1.2rem !important;
+    font-size: 0.88rem !important;
+    box-shadow: 0 2px 6px rgba(29,53,87,0.30) !important;
+    transition: all 0.2s !important;
+    width: 100% !important;
+}
+.gov-btn-primary button:hover {
+    box-shadow: 0 4px 14px rgba(29,53,87,0.40) !important;
+    transform: translateY(-1px) !important;
+}
+.gov-btn-outline button {
+    background: #FFFFFF !important;
+    border: 2px solid #1D3557 !important;
+    color: #1D3557 !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.85rem !important;
+    transition: all 0.2s !important;
+    width: 100% !important;
+}
+.gov-btn-outline button:hover {
+    background: #1D3557 !important;
+    color: #FFFFFF !important;
+    transform: translateY(-1px) !important;
+}
+.gov-btn-amber button {
+    background: linear-gradient(180deg, #F4A020, #E8950F) !important;
+    border: none !important;
+    color: #1D3557 !important;
+    font-weight: 700 !important;
+    border-radius: 6px !important;
+    padding: 0.55rem 1.2rem !important;
+    font-size: 0.88rem !important;
+    box-shadow: 0 2px 6px rgba(244,160,32,0.35) !important;
+    transition: all 0.2s !important;
+    width: 100% !important;
+}
+.gov-btn-amber button:hover {
+    box-shadow: 0 4px 14px rgba(244,160,32,0.50) !important;
+    transform: translateY(-1px) !important;
 }
 
-/* ── General buttons ─────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════
+   GENERAL OVERRIDES
+   ══════════════════════════════════════════════════════════════ */
 .stButton > button {
-    border-radius: 10px !important;
+    border-radius: 6px !important;
     font-weight: 500 !important;
     transition: all 0.2s ease !important;
+    font-family: 'Inter', sans-serif !important;
 }
 .stButton > button:hover { transform: translateY(-1px) !important; }
-hr { border-color: rgba(255,255,255,0.07) !important; }
+
+[data-testid="metric-container"] {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 10px 14px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+hr { border-color: #E2E8F0 !important; }
 details {
-    background: rgba(255,255,255,0.02) !important;
-    border: 1px solid rgba(255,255,255,0.07) !important;
-    border-radius: 10px !important;
+    background: #F8FAFC !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 8px !important;
+}
+.stTextArea textarea {
+    border: 2px solid #CBD5E1 !important;
+    border-radius: 8px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.9rem !important;
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    transition: border-color 0.2s !important;
+}
+.stTextArea textarea:focus {
+    border-color: #1D3557 !important;
+    box-shadow: 0 0 0 3px rgba(29,53,87,0.10) !important;
+}
+.stSelectbox > div > div {
+    border: 2px solid #CBD5E1 !important;
+    border-radius: 6px !important;
+    background: #FFFFFF !important;
+}
+.stExpander {
+    background: #FFFFFF !important;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FEEDBACK
+   ══════════════════════════════════════════════════════════════ */
+.gov-fb-thanks {
+    color: #059669;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FOOTER — Government style
+   ══════════════════════════════════════════════════════════════ */
+.gov-partners-bar {
+    background: linear-gradient(135deg, #1D3557, #264573);
+    margin: 2rem -1rem 0;
+    padding: 18px 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    border-top: 4px solid #F4A020;
+}
+.gov-partner {
+    color: rgba(255,255,255,0.85);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 6px 16px;
+    border: 1px solid rgba(255,255,255,0.20);
+    border-radius: 6px;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+.gov-partner:hover {
+    background: rgba(255,255,255,0.10);
+    color: #FFFFFF;
+    border-color: rgba(255,255,255,0.40);
+}
+.gov-footer {
+    background: #0F1D2F;
+    margin: 0 -1rem -1rem;
+    padding: 1.5rem 2.5rem;
+    text-align: center;
+}
+.gov-footer-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+.gov-footer-link {
+    color: rgba(255,255,255,0.65);
+    font-size: 0.78rem;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+.gov-footer-link:hover { color: #F4A020; }
+.gov-footer-copy {
+    color: rgba(255,255,255,0.40);
+    font-size: 0.72rem;
+    line-height: 1.5;
+}
+.gov-footer-disclaimer {
+    color: rgba(255,255,255,0.50);
+    font-size: 0.7rem;
+    margin-top: 8px;
+    font-style: italic;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -320,21 +902,149 @@ def _init_state():
             st.session_state[k] = v
 
 
+# ─── Top Utility Bar ──────────────────────────────────────────────────────────
+
+def render_top_bar(is_hindi: bool):
+    """White top bar with National Emblem, bilingual branding, and accessibility."""
+    st.markdown(f"""
+    <div class="gov-top-bar">
+        <div class="gov-top-left">
+            <div class="gov-emblem">🏛️</div>
+            <div class="gov-brand">
+                <div class="gov-brand-hi">गवगाइड एआई — सरकारी सेवा सहायक</div>
+                <div class="gov-brand-en">GovGuide AI</div>
+                <div class="gov-brand-sub">Government Systems & Public Services Assistant</div>
+            </div>
+        </div>
+        <div class="gov-top-right">
+            <div class="gov-a-btn gov-a-sm" title="Decrease font size">A<sup>-</sup></div>
+            <div class="gov-a-btn gov-a-md" title="Default font size">A</div>
+            <div class="gov-a-btn gov-a-lg" title="Increase font size">A<sup>+</sup></div>
+            <div class="gov-contrast-btn" title="Toggle contrast"></div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ─── Navigation Bar ───────────────────────────────────────────────────────────
+
+def render_nav_bar(is_hindi: bool):
+    """Deep navy navigation bar with menu items."""
+    nav_items_en = ["🏠 Home", "💬 Ask Question", "📋 Schemes", "📎 Documents", "📖 How to Use", "🔗 Quick Links", "❓ Help"]
+    nav_items_hi = ["🏠 होम", "💬 प्रश्न पूछें", "📋 योजनाएं", "📎 दस्तावेज़", "📖 उपयोग", "🔗 लिंक", "❓ सहायता"]
+    items = nav_items_hi if is_hindi else nav_items_en
+
+    items_html = ""
+    for i, item in enumerate(items):
+        active = " gov-nav-active" if i == 0 else ""
+        items_html += f'<div class="gov-nav-item{active}">{item}</div>'
+
+    st.markdown(f"""
+    <div class="gov-nav-bar">
+        <div class="gov-nav-links">{items_html}</div>
+        <div class="gov-nav-search">
+            <div class="gov-search-icon">🔍</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ─── Announcement Ticker ──────────────────────────────────────────────────────
+
+def render_ticker(is_hindi: bool):
+    """Scrolling announcements bar like income tax portal."""
+    announcements_en = [
+        "📢 GovGuide AI now supports document upload for rejection letter analysis",
+        "🆕 Hindi language support available — switch from Home panel",
+        "📋 New: RTI filing guide and scholarship rejection helper added",
+        "⚡ Tip: Set your profile (State, Category, Income) for personalised answers",
+    ]
+    announcements_hi = [
+        "📢 GovGuide AI अब अस्वीकृति पत्र के विश्लेषण के लिए दस्तावेज़ अपलोड का समर्थन करता है",
+        "🆕 हिंदी भाषा का समर्थन उपलब्ध है — होम पैनल से बदलें",
+        "📋 नया: RTI फाइलिंग गाइड और छात्रवृत्ति अस्वीकृति सहायक जोड़ा गया",
+        "⚡ सुझाव: व्यक्तिगत उत्तरों के लिए अपनी प्रोफ़ाइल सेट करें",
+    ]
+    items = announcements_hi if is_hindi else announcements_en
+    spans = "".join(f"<span>{a}</span>" for a in items)
+    label = "अपडेट" if is_hindi else "UPDATES"
+
+    st.markdown(f"""
+    <div class="gov-ticker">
+        <div class="gov-ticker-inner">
+            <div class="gov-ticker-label">📣 {label}</div>
+            <div class="gov-ticker-content">
+                <div class="gov-ticker-scroll">{spans}</div>
+            </div>
+            <div class="gov-ticker-controls">
+                <div class="gov-ticker-btn">◀</div>
+                <div class="gov-ticker-btn">▶</div>
+                <div class="gov-ticker-btn">⏸</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ─── Hero Banner ───────────────────────────────────────────────────────────────
+
+def render_hero(is_hindi: bool):
+    """Government-style hero banner with title and stats."""
+    if is_hindi:
+        title = '🏛️ GovGuide <span>AI</span>'
+        subtitle = "भारतीय सरकारी प्रणालियों और सार्वजनिक सेवाओं के लिए आपका AI-संचालित सहायक। प्रक्रियाओं को समझें, अस्वीकृति के कारण जानें, और दस्तावेज़ आवश्यकताओं की जानकारी प्राप्त करें।"
+        s1, s2, s3 = "विषय", "भाषाएं", "स्रोत"
+    else:
+        title = '🏛️ GovGuide <span>AI</span>'
+        subtitle = "Your AI-powered assistant for Indian Government Systems & Public Services. Understand processes, know why applications are rejected, and get document guidance."
+        s1, s2, s3 = "Topics", "Languages", "Sources"
+
+    st.markdown(f"""
+    <div class="gov-hero">
+        <div class="gov-hero-content">
+            <div class="gov-hero-text">
+                <h1>{title}</h1>
+                <p>{subtitle}</p>
+            </div>
+            <div class="gov-hero-stats">
+                <div class="gov-hero-stat">
+                    <div class="gov-hero-stat-num">10+</div>
+                    <div class="gov-hero-stat-label">{s1}</div>
+                </div>
+                <div class="gov-hero-stat">
+                    <div class="gov-hero-stat-num">2</div>
+                    <div class="gov-hero-stat-label">{s2}</div>
+                </div>
+                <div class="gov-hero-stat">
+                    <div class="gov-hero-stat-num">50+</div>
+                    <div class="gov-hero-stat-label">{s3}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
 # ─── "How to Use" panel ────────────────────────────────────────────────────────
 
 def render_help_panel(is_hindi: bool):
-    st.markdown('<div class="panel-anim">', unsafe_allow_html=True)
-    with st.container(border=True):
-        # Header row
-        cl, ct = st.columns([1, 9])
+    panel_title = "📖 GovGuide AI का उपयोग कैसे करें" if is_hindi else "📖 How to Use GovGuide AI"
+
+    st.markdown(f"""
+    <div class="gov-panel">
+        <div class="gov-panel-header">
+            <span>{panel_title}</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    with st.container():
+        cl, _ = st.columns([1, 9])
         with cl:
-            if st.button("✕  Close", key="close_help"):
+            if st.button("✕ Close", key="close_help"):
                 st.session_state.show_help = False
                 st.rerun()
-        with ct:
-            st.markdown("### 📖 " + ("GovGuide AI का उपयोग कैसे करें" if is_hindi else "How to Use GovGuide AI"))
 
-        st.divider()
         c1, c2, c3 = st.columns(3, gap="medium")
 
         with c1:
@@ -371,33 +1081,35 @@ def render_help_panel(is_hindi: bool):
                 "🏛️ India Portal": "https://india.gov.in",
             }.items():
                 st.markdown(f"[{name}]({url})")
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ─── "Home" panel ──────────────────────────────────────────────────────────────
 
 def render_home_panel(fb_handler, is_hindi: bool):
-    """Slide-in Home drawer with language, profile, topics, examples, links."""
-    st.markdown('<div class="panel-anim">', unsafe_allow_html=True)
-    with st.container(border=True):
+    """Government-style Home panel with profile, topics, examples, links."""
+    panel_title = "🏠 GovGuide AI — होम" if is_hindi else "🏠 GovGuide AI — Home"
 
-        # Header
-        cl, ct = st.columns([1, 9])
+    st.markdown(f"""
+    <div class="gov-panel">
+        <div class="gov-panel-header">
+            <span>{panel_title}</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    with st.container():
+        cl, _ = st.columns([1, 9])
         with cl:
-            if st.button("✕  Close", key="close_home"):
+            if st.button("✕ Close", key="close_home"):
                 st.session_state.show_home = False
                 st.rerun()
-        with ct:
-            st.markdown("### 🏠 " + ("GovGuide AI — होम" if is_hindi else "GovGuide AI — Home"))
-
-        st.divider()
 
         # Four-column content layout
         lc, pc, tc, ec = st.columns([1, 1.4, 1.6, 1], gap="medium")
 
         # ── Col 1: Language ────────────────────────────────────────
         with lc:
-            st.markdown('<p class="home-section-title">🌐 Language / भाषा</p>', unsafe_allow_html=True)
+            st.markdown('<p class="gov-panel-section-title">🌐 Language / भाषा</p>', unsafe_allow_html=True)
             lang_pick = st.selectbox(
                 "lang_home",
                 Config.LANGUAGES,
@@ -408,13 +1120,13 @@ def render_home_panel(fb_handler, is_hindi: bool):
             st.session_state.language = lang_pick
 
             st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown('<p class="home-section-title">📚 ' + ("विषय" if is_hindi else "Topics") + '</p>', unsafe_allow_html=True)
-            pills = ["💰 Scholarship", "🆔 Aadhaar", "📄 Income Cert", "📜 RTI"]
-            st.markdown(" ".join(f'<span class="pill">{p}</span>' for p in pills), unsafe_allow_html=True)
+            st.markdown('<p class="gov-panel-section-title">📚 ' + ("विषय" if is_hindi else "Topics") + '</p>', unsafe_allow_html=True)
+            pills = ["💰 Scholarship", "🆔 Aadhaar", "📄 Income Cert", "📜 RTI", "🪪 PAN Card", "🛂 Passport"]
+            st.markdown(" ".join(f'<span class="gov-pill">{p}</span>' for p in pills), unsafe_allow_html=True)
 
         # ── Col 2: Profile ─────────────────────────────────────────
         with pc:
-            st.markdown('<p class="home-section-title">👤 ' + ("आपकी प्रोफ़ाइल" if is_hindi else "Your Profile") + '</p>', unsafe_allow_html=True)
+            st.markdown('<p class="gov-panel-section-title">👤 ' + ("आपकी प्रोफ़ाइल" if is_hindi else "Your Profile") + '</p>', unsafe_allow_html=True)
             st.caption("Tailors answers to your situation" if not is_hindi else "आपकी स्थिति के अनुसार जवाब")
 
             state_pick = st.selectbox(
@@ -443,7 +1155,7 @@ def render_home_panel(fb_handler, is_hindi: bool):
 
         # ── Col 3: Example questions ───────────────────────────────
         with tc:
-            st.markdown('<p class="home-section-title">💡 ' + ("उदाहरण प्रश्न" if is_hindi else "Example Questions") + '</p>', unsafe_allow_html=True)
+            st.markdown('<p class="gov-panel-section-title">💡 ' + ("उदाहरण प्रश्न" if is_hindi else "Example Questions") + '</p>', unsafe_allow_html=True)
             examples = (
                 ["मेरी छात्रवृत्ति क्यों अस्वीकार हुई?",
                  "आधार में नाम कैसे सुधारें?",
@@ -463,7 +1175,7 @@ def render_home_panel(fb_handler, is_hindi: bool):
 
         # ── Col 4: Links + Feedback stats ─────────────────────────
         with ec:
-            st.markdown('<p class="home-section-title">🔗 ' + ("त्वरित लिंक" if is_hindi else "Quick Links") + '</p>', unsafe_allow_html=True)
+            st.markdown('<p class="gov-panel-section-title">🔗 ' + ("त्वरित लिंक" if is_hindi else "Quick Links") + '</p>', unsafe_allow_html=True)
             for name, url in {
                 "🎓 Scholarships": "https://scholarships.gov.in",
                 "🆔 Aadhaar": "https://uidai.gov.in",
@@ -476,14 +1188,97 @@ def render_home_panel(fb_handler, is_hindi: bool):
             st.markdown("<br>", unsafe_allow_html=True)
             stats = fb_handler.get_stats()
             if stats["total"] > 0:
-                st.markdown('<p class="home-section-title">📊 ' + ("फ़ीडबैक" if is_hindi else "Feedback") + '</p>', unsafe_allow_html=True)
+                st.markdown('<p class="gov-panel-section-title">📊 ' + ("फ़ीडबैक" if is_hindi else "Feedback") + '</p>', unsafe_allow_html=True)
                 fc1, fc2 = st.columns(2)
                 fc1.metric("👍", stats["helpful"])
                 fc2.metric("👎", stats["not_helpful"])
                 st.progress(stats["helpful_pct"] / 100)
                 st.caption(f"{stats['helpful_pct']}% helpful")
 
-    st.markdown('</div>', unsafe_allow_html=True)
+
+# ─── Quick Services Grid ──────────────────────────────────────────────────────
+
+def render_quick_services(is_hindi: bool):
+    """Grid of clickable service cards for common questions."""
+    services = [
+        {"icon": "🎓", "bg": "gov-service-icon-blue",
+         "name": "Scholarship Help" if not is_hindi else "छात्रवृत्ति सहायता",
+         "desc": "Why rejected? How to apply?" if not is_hindi else "अस्वीकार क्यों? आवेदन कैसे?",
+         "q": "मेरी छात्रवृत्ति क्यों अस्वीकार हुई?" if is_hindi else "Why was my scholarship rejected?"},
+        {"icon": "🆔", "bg": "gov-service-icon-green",
+         "name": "Aadhaar Services" if not is_hindi else "आधार सेवाएं",
+         "desc": "Name correction, update, link" if not is_hindi else "नाम सुधार, अपडेट, लिंक",
+         "q": "आधार में नाम कैसे सुधारें?" if is_hindi else "How to correct my name in Aadhaar?"},
+        {"icon": "📄", "bg": "gov-service-icon-orange",
+         "name": "Certificates" if not is_hindi else "प्रमाण पत्र",
+         "desc": "Income, caste, domicile docs" if not is_hindi else "आय, जाति, अधिवास दस्तावेज",
+         "q": "आय प्रमाण पत्र के लिए क्या दस्तावेज चाहिए?" if is_hindi else "What documents needed for income certificate?"},
+        {"icon": "📜", "bg": "gov-service-icon-purple",
+         "name": "RTI Filing" if not is_hindi else "RTI दाखिल करें",
+         "desc": "How to file & track RTI" if not is_hindi else "RTI कैसे दाखिल करें और ट्रैक करें",
+         "q": "RTI आवेदन कैसे करें?" if is_hindi else "How to file an RTI application?"},
+    ]
+
+    cards_html = ""
+    for s in services:
+        cards_html += f"""
+        <div class="gov-service-card" data-question="{s['q']}">
+            <div class="gov-service-icon {s['bg']}">{s['icon']}</div>
+            <div class="gov-service-name">{s['name']}</div>
+            <div class="gov-service-desc">{s['desc']}</div>
+        </div>
+        """
+
+    section_title = "त्वरित सेवाएं" if is_hindi else "Quick Services"
+    st.markdown(f'<div class="gov-section-title">🚀 {section_title}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="gov-service-grid">{cards_html}</div>', unsafe_allow_html=True)
+
+    # Streamlit buttons for actual interactivity
+    cols = st.columns(len(services))
+    for i, (col, s) in enumerate(zip(cols, services)):
+        with col:
+            if st.button(f"{s['icon']} {s['name']}", key=f"svc_{i}", use_container_width=True):
+                st.session_state.prefill_question = s['q']
+                st.rerun()
+
+
+# ─── Government Footer ────────────────────────────────────────────────────────
+
+def render_footer(is_hindi: bool):
+    """Government-style footer with partner logos bar and links."""
+    st.markdown("""
+    <div class="gov-partners-bar">
+        <a href="https://india.gov.in" target="_blank" class="gov-partner">🇮🇳 india.gov.in</a>
+        <a href="https://digitalindia.gov.in" target="_blank" class="gov-partner">💻 Digital India</a>
+        <a href="https://meity.gov.in" target="_blank" class="gov-partner">🏢 MeitY</a>
+        <a href="https://mygov.in" target="_blank" class="gov-partner">🗳️ MyGov</a>
+        <a href="https://data.gov.in" target="_blank" class="gov-partner">📊 data.gov.in</a>
+        <a href="https://nic.in" target="_blank" class="gov-partner">🖥️ NIC</a>
+    </div>
+    """, unsafe_allow_html=True)
+
+    disclaimer = (
+        "⚠️ यह उपकरण केवल शैक्षिक उद्देश्यों के लिए है। कोई भी कदम उठाने से पहले आधिकारिक सरकारी स्रोतों से पुष्टि करें। यह कानूनी सलाह नहीं है।"
+        if is_hindi else
+        "⚠️ This tool is for educational purposes only. Always verify information with official government sources before taking action. This is not legal advice."
+    )
+
+    st.markdown(f"""
+    <div class="gov-footer">
+        <div class="gov-footer-links">
+            <a href="#" class="gov-footer-link">Terms & Conditions</a>
+            <a href="#" class="gov-footer-link">Privacy Policy</a>
+            <a href="#" class="gov-footer-link">Accessibility</a>
+            <a href="#" class="gov-footer-link">Sitemap</a>
+            <a href="#" class="gov-footer-link">Contact Us</a>
+            <a href="#" class="gov-footer-link">Feedback</a>
+        </div>
+        <div class="gov-footer-copy">
+            Made with ❤️ for Citizens of India &nbsp;|&nbsp; © 2024–2026 GovGuide AI &nbsp;|&nbsp; For Educational Purpose Only
+        </div>
+        <div class="gov-footer-disclaimer">{disclaimer}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 # ─── Main ──────────────────────────────────────────────────────────────────────
@@ -499,36 +1294,34 @@ def main():
     lang     = st.session_state.language
 
     # ════════════════════════════════════════════════════════════════
-    # HEADER ROW:  [❓ How to Use]  [Hero]  [🏠 Home]
+    # GOVERNMENT HEADER
     # ════════════════════════════════════════════════════════════════
-    how_col, hero_col, home_col = st.columns([1.2, 5.6, 1.2])
+    render_top_bar(is_hindi)
+    render_nav_bar(is_hindi)
+    render_ticker(is_hindi)
+    render_hero(is_hindi)
 
-    with how_col:
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown('<div class="how-btn">', unsafe_allow_html=True)
-        how_lbl = "❓ उपयोग" if is_hindi else "❓ How to Use"
-        if st.button(how_lbl, key="how_btn", use_container_width=True):
-            st.session_state.show_help = not st.session_state.show_help
-            st.session_state.show_home = False
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+    # ════════════════════════════════════════════════════════════════
+    # ACTION BUTTONS ROW: [Home] [How to Use]
+    # ════════════════════════════════════════════════════════════════
+    st.markdown("<br>", unsafe_allow_html=True)
+    btn_c1, btn_c2, btn_spacer = st.columns([1.5, 1.5, 5])
 
-    with hero_col:
-        title_sub = ("भारतीय सरकारी सेवाओं के लिए आपका AI सहायक"
-                     if is_hindi else
-                     "Your AI Assistant for Government Systems &amp; Public Services")
-        st.markdown(
-            f'<div class="govguide-hero"><h1>🏛️ GovGuide AI</h1><p>{title_sub}</p></div>',
-            unsafe_allow_html=True,
-        )
-
-    with home_col:
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown('<div class="home-btn">', unsafe_allow_html=True)
-        home_lbl = "🏠 होम" if is_hindi else "🏠 Home"
+    with btn_c1:
+        st.markdown('<div class="gov-btn-primary">', unsafe_allow_html=True)
+        home_lbl = "🏠 होम पैनल" if is_hindi else "🏠 Home Panel"
         if st.button(home_lbl, key="home_btn", use_container_width=True):
             st.session_state.show_home = not st.session_state.show_home
             st.session_state.show_help = False
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with btn_c2:
+        st.markdown('<div class="gov-btn-outline">', unsafe_allow_html=True)
+        how_lbl = "📖 उपयोग कैसे करें" if is_hindi else "📖 How to Use"
+        if st.button(how_lbl, key="how_btn", use_container_width=True):
+            st.session_state.show_help = not st.session_state.show_help
+            st.session_state.show_home = False
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -545,11 +1338,27 @@ def main():
     # ════════════════════════════════════════════════════════════════
     if load_err:
         if load_err == "embeddings_missing":
-            st.error("⚠️ Knowledge base not found. Run setup first:")
+            st.markdown("""
+            <div class="gov-card gov-card-warning">
+                <div class="gov-card-title">⚠️ Knowledge Base Not Found</div>
+                <div class="gov-card-body">The AI knowledge base has not been initialized. Please run setup first.</div>
+            </div>
+            """, unsafe_allow_html=True)
             st.code("python setup.py", language="bash")
         else:
-            st.error(f"⚠️ System error: {load_err.replace('error:', '')}")
+            st.markdown(f"""
+            <div class="gov-card gov-card-warning">
+                <div class="gov-card-title">⚠️ System Error</div>
+                <div class="gov-card-body">{load_err.replace('error:', '')}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        render_footer(is_hindi)
         return
+
+    # ════════════════════════════════════════════════════════════════
+    # QUICK SERVICES
+    # ════════════════════════════════════════════════════════════════
+    render_quick_services(is_hindi)
 
     # ════════════════════════════════════════════════════════════════
     # DOCUMENT UPLOAD
@@ -563,7 +1372,7 @@ def main():
             if is_hindi else
             "Upload a rejection letter or application form — the AI will analyse it and tell you what to fix."
         )
-        st.markdown(f'<div class="upload-info">{hint}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="gov-upload-info">📄 {hint}</div>', unsafe_allow_html=True)
 
         uploaded = st.file_uploader("file_up", type=["pdf", "png", "jpg", "jpeg", "txt"],
                                     label_visibility="collapsed")
@@ -580,7 +1389,8 @@ def main():
                     st.text(text[:600] + ("…" if len(text) > 600 else ""))
 
                 a_lbl = "🔍 दस्तावेज़ का विश्लेषण करें" if is_hindi else "🔍 Analyse This Document"
-                if st.button(a_lbl, type="primary", key="analyse_doc"):
+                st.markdown('<div class="gov-btn-amber">', unsafe_allow_html=True)
+                if st.button(a_lbl, key="analyse_doc", use_container_width=True):
                     auto_q = ("इस दस्तावेज़ का विश्लेषण करें।" if is_hindi
                               else "Analyse this uploaded document and tell me what issues exist and what action to take.")
                     user_ctx = {"state": st.session_state.state_pick,
@@ -602,6 +1412,7 @@ def main():
                         "ts": datetime.now().strftime("%H:%M"),
                     })
                     st.rerun()
+                st.markdown('</div>', unsafe_allow_html=True)
 
         if st.session_state.doc_text:
             c_lbl = "🗑️ दस्तावेज़ हटाएं" if is_hindi else "🗑️ Clear Document"
@@ -612,7 +1423,7 @@ def main():
 
     if st.session_state.doc_text:
         st.markdown(
-            f'<div class="doc-badge">📎 <strong>{st.session_state.doc_name}</strong>'
+            f'<div class="gov-doc-badge">📎 <strong>{st.session_state.doc_name}</strong>'
             " — questions will reference this document</div>",
             unsafe_allow_html=True,
         )
@@ -620,8 +1431,12 @@ def main():
     # ════════════════════════════════════════════════════════════════
     # QUESTION INPUT
     # ════════════════════════════════════════════════════════════════
-    q_lbl = "❓ अपना प्रश्न पूछें" if is_hindi else "❓ Ask Your Question"
-    st.markdown(f"### {q_lbl}")
+    q_title = "❓ अपना प्रश्न पूछें" if is_hindi else "❓ Ask Your Question"
+    st.markdown(f"""
+    <div class="gov-question-card">
+        <div class="gov-question-header">💬 {q_title}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     prefill  = st.session_state.prefill_question or ""
     question = st.text_area(
@@ -636,8 +1451,10 @@ def main():
 
     b1, b2, b3 = st.columns([2, 1, 1], gap="small")
     with b1:
+        st.markdown('<div class="gov-btn-primary">', unsafe_allow_html=True)
         submit = st.button("🔍 " + ("उत्तर प्राप्त करें" if is_hindi else "Get Answer"),
                            type="primary", use_container_width=True, key="submit_btn")
+        st.markdown('</div>', unsafe_allow_html=True)
     with b2:
         clr_doc = st.button("📄 " + ("Doc हटाएं" if is_hindi else "Clear Doc"),
                             use_container_width=True,
@@ -689,7 +1506,7 @@ def main():
     # ════════════════════════════════════════════════════════════════
     if st.session_state.chat_history:
         h_lbl = "💬 बातचीत का इतिहास" if is_hindi else "💬 Conversation History"
-        st.markdown(f"---\n### {h_lbl}")
+        st.markdown(f'<div class="gov-section-title">{h_lbl}</div>', unsafe_allow_html=True)
 
         for ri, chat in enumerate(reversed(st.session_state.chat_history)):
             chat_idx = len(st.session_state.chat_history) - 1 - ri
@@ -697,12 +1514,13 @@ def main():
 
             doc_flag = " 📎" if chat.get("has_doc") else ""
             st.markdown(
-                f'<div class="q-bubble">'
-                f'<span>🙋 {chat["question"]}{doc_flag}</span>'
-                f'<span class="q-time">{chat.get("ts","")}</span></div>',
+                f'<div class="gov-q-bubble">'
+                f'<span class="gov-q-text">🙋 {chat["question"]}{doc_flag}</span>'
+                f'<span class="gov-q-time">{chat.get("ts","")}</span></div>',
                 unsafe_allow_html=True,
             )
 
+            st.markdown('<div class="gov-answer-card">', unsafe_allow_html=True)
             with st.container():
                 st.markdown(chat["answer"])
 
@@ -712,9 +1530,9 @@ def main():
                     with st.expander(s_lbl):
                         for src in sources:
                             st.markdown(
-                                f'<div class="src-card">'
-                                f'<div class="src-name">📄 {src["name"]}</div>'
-                                f'<div class="src-snip">"{src["snippet"]}"</div>'
+                                f'<div class="gov-src-card">'
+                                f'<div class="gov-src-name">📄 {src["name"]}</div>'
+                                f'<div class="gov-src-snip">"{src["snippet"]}"</div>'
                                 f'</div>', unsafe_allow_html=True)
 
                 if fk not in st.session_state.feedback_given:
@@ -739,7 +1557,9 @@ def main():
                             st.rerun()
                 else:
                     thanks = "फ़ीडबैक के लिए धन्यवाद!" if is_hindi else "Thanks for your feedback!"
-                    st.markdown(f'<span class="fb-thanks">✅ {thanks}</span>', unsafe_allow_html=True)
+                    st.markdown(f'<span class="gov-fb-thanks">✅ {thanks}</span>', unsafe_allow_html=True)
+
+            st.markdown('</div>', unsafe_allow_html=True)
 
             if ri < len(st.session_state.chat_history) - 1:
                 st.divider()
@@ -747,15 +1567,7 @@ def main():
     # ════════════════════════════════════════════════════════════════
     # FOOTER
     # ════════════════════════════════════════════════════════════════
-    st.divider()
-    footer = ("भारत के नागरिकों के लिए ❤️ से बनाया गया | केवल शैक्षिक उद्देश्य"
-              if is_hindi else
-              "Made with ❤️ for Citizens of India | For Educational Purpose Only")
-    st.markdown(
-        f"<div style='text-align:center;color:rgba(200,210,255,0.35);"
-        f"padding:0.8rem;font-size:0.82rem;'>{footer}</div>",
-        unsafe_allow_html=True,
-    )
+    render_footer(is_hindi)
 
 
 if __name__ == "__main__":
