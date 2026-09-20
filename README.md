@@ -40,6 +40,16 @@ GovGuide AI provides clear explanations about:
 ## 📁 Project Structure
 ```
 govguide-ai/
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── utils/
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── package.json
+│   └── vite.config.js
 ├── data/
 │   ├── raw/                    # Government documents
 │   └── processed/embeddings/   # Vector embeddings
