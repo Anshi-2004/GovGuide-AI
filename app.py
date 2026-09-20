@@ -10,6 +10,7 @@ from datetime import datetime
 from typing import Optional, Tuple
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 from src.config import Config
 from src.embeddings_generator import EmbeddingsGenerator
@@ -159,6 +160,80 @@ html, body, [class*="css"] {
     transition: all 0.15s;
 }
 .gov-contrast-btn:hover { border-color: #1D3557; }
+.gov-a-btn.active {
+    outline: 2px solid #F4A020;
+    outline-offset: 1px;
+}
+
+/* ── Font-size scaling ─────────────────────────────────── */
+html.gov-font-sm .stApp { font-size: 13px !important; }
+html.gov-font-lg .stApp { font-size: 18px !important; }
+
+/* ── High-contrast / Dark mode ─────────────────────────── */
+html.gov-high-contrast .stApp {
+    background: #121212 !important;
+    color: #F0F0F0 !important;
+}
+html.gov-high-contrast .gov-top-bar {
+    background: #1A1A1A !important;
+    border-bottom-color: #F4A020 !important;
+}
+html.gov-high-contrast .gov-brand-hi,
+html.gov-high-contrast .gov-brand-en { color: #F0F0F0 !important; }
+html.gov-high-contrast .gov-brand-sub { color: #BBBBBB !important; }
+html.gov-high-contrast .gov-nav-bar {
+    background: #0D0D0D !important;
+}
+html.gov-high-contrast .gov-hero {
+    background: linear-gradient(135deg, #0D0D0D 0%, #1A1A2E 100%) !important;
+}
+html.gov-high-contrast .gov-card,
+html.gov-high-contrast .gov-answer-card,
+html.gov-high-contrast .gov-question-card,
+html.gov-high-contrast .gov-panel {
+    background: #1E1E1E !important;
+    border-color: #333 !important;
+    color: #E0E0E0 !important;
+}
+html.gov-high-contrast .gov-card-title,
+html.gov-high-contrast .gov-question-header,
+html.gov-high-contrast .gov-section-title,
+html.gov-high-contrast .gov-panel-header { color: #F4A020 !important; }
+html.gov-high-contrast .gov-card-body,
+html.gov-high-contrast .gov-service-desc,
+html.gov-high-contrast .gov-ticker-scroll { color: #CCCCCC !important; }
+html.gov-high-contrast .gov-service-card {
+    background: #1E1E1E !important;
+    border-color: #444 !important;
+}
+html.gov-high-contrast .gov-service-name { color: #F0F0F0 !important; }
+html.gov-high-contrast .gov-q-bubble {
+    background: #1A2740 !important;
+    border-color: #2A4060 !important;
+}
+html.gov-high-contrast .gov-q-text { color: #E0E0E0 !important; }
+html.gov-high-contrast .gov-ticker {
+    background: #1A1A2E !important;
+    border-bottom-color: #333 !important;
+}
+html.gov-high-contrast .gov-contrast-btn {
+    border-color: #F4A020 !important;
+    background: linear-gradient(135deg, #F8FAFC 50%, #1E293B 50%) !important;
+}
+html.gov-high-contrast .stTextArea textarea {
+    background: #2A2A2A !important;
+    color: #F0F0F0 !important;
+    border-color: #555 !important;
+}
+html.gov-high-contrast .stSelectbox > div > div {
+    background: #2A2A2A !important;
+    color: #F0F0F0 !important;
+    border-color: #555 !important;
+}
+html.gov-high-contrast .stExpander {
+    background: #1E1E1E !important;
+    border-color: #444 !important;
+}
 
 /* ══════════════════════════════════════════════════════════════
    NAVIGATION BAR — Deep navy with white text
@@ -939,13 +1014,79 @@ def render_top_bar(is_hindi: bool):
             </div>
         </div>
         <div class="gov-top-right">
-            <div class="gov-a-btn gov-a-sm" title="Decrease font size">A<sup>-</sup></div>
-            <div class="gov-a-btn gov-a-md" title="Default font size">A</div>
-            <div class="gov-a-btn gov-a-lg" title="Increase font size">A<sup>+</sup></div>
-            <div class="gov-contrast-btn" title="Toggle contrast"></div>
+            <div class="gov-a-btn gov-a-sm" id="gov-font-sm-btn" title="Decrease font size">A<sup>-</sup></div>
+            <div class="gov-a-btn gov-a-md active" id="gov-font-md-btn" title="Default font size">A</div>
+            <div class="gov-a-btn gov-a-lg" id="gov-font-lg-btn" title="Increase font size">A<sup>+</sup></div>
+            <div class="gov-contrast-btn" id="gov-contrast-btn" title="Toggle contrast"></div>
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+    # Inject JavaScript via components.html — runs in an iframe but accesses
+    # the parent Streamlit document through window.parent.document.
+    components.html("""
+    <script>
+    (function() {
+        const doc = window.parent.document;
+
+        function wireButtons() {
+            const smBtn = doc.getElementById('gov-font-sm-btn');
+            const mdBtn = doc.getElementById('gov-font-md-btn');
+            const lgBtn = doc.getElementById('gov-font-lg-btn');
+            const contrastBtn = doc.getElementById('gov-contrast-btn');
+
+            if (!smBtn || !mdBtn || !lgBtn || !contrastBtn) {
+                // Elements not rendered yet, retry
+                setTimeout(wireButtons, 200);
+                return;
+            }
+
+            // Prevent duplicate listeners
+            if (smBtn.dataset.wired) return;
+            smBtn.dataset.wired = 'true';
+
+            const html = doc.documentElement;
+
+            function clearActive() {
+                doc.querySelectorAll('.gov-a-btn').forEach(function(b) {
+                    b.classList.remove('active');
+                });
+            }
+
+            smBtn.addEventListener('click', function() {
+                html.classList.remove('gov-font-lg');
+                html.classList.add('gov-font-sm');
+                clearActive();
+                smBtn.classList.add('active');
+            });
+
+            mdBtn.addEventListener('click', function() {
+                html.classList.remove('gov-font-sm', 'gov-font-lg');
+                clearActive();
+                mdBtn.classList.add('active');
+            });
+
+            lgBtn.addEventListener('click', function() {
+                html.classList.remove('gov-font-sm');
+                html.classList.add('gov-font-lg');
+                clearActive();
+                lgBtn.classList.add('active');
+            });
+
+            contrastBtn.addEventListener('click', function() {
+                html.classList.toggle('gov-high-contrast');
+            });
+        }
+
+        // Wait for DOM to be ready then wire up
+        if (doc.readyState === 'complete') {
+            wireButtons();
+        } else {
+            doc.addEventListener('DOMContentLoaded', wireButtons);
+        }
+    })();
+    </script>
+    """, height=0, scrolling=False)
 
 
 # ─── Navigation Bar ───────────────────────────────────────────────────────────
