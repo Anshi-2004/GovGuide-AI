@@ -136,22 +136,28 @@ class QueryHandler:
         language: str = "English",
     ) -> Dict:
         """Answer a question using RAG. Always returns a valid dict."""
+        source_docs = []
+        # Attempt to retrieve relevant knowledge chunks
+        if self.vector_store:
+            try:
+                try:
+                    source_docs = self.retriever.invoke(question)
+                except AttributeError:
+                    source_docs = self.retriever.get_relevant_documents(question)  # type: ignore
+            except Exception as ret_err:
+                print(f"[QueryHandler] Retrieval error: {ret_err}")
+
         if not self._llm_available:
             msg = self._init_error or "LLM unavailable."
             if "api_key" in msg.lower() or "not set" in msg.lower():
                 return self._fallback(
                     "🔑 **API Key Missing**: Please add your `OPENROUTER_API_KEY` to the `.env` file "
-                    "and restart the app. You can get a free key at [OpenRouter Keys](https://openrouter.ai/keys)."
+                    "and restart the app. You can get a free key at [OpenRouter Keys](https://openrouter.ai/keys).",
+                    source_docs=source_docs,
                 )
-            return self._fallback(f"⚠️ **LLM Unavailable**: {msg}")
+            return self._fallback(f"⚠️ **LLM Unavailable**: {msg}", source_docs=source_docs)
 
         try:
-            # Retrieve relevant knowledge chunks
-            try:
-                source_docs = self.retriever.invoke(question)
-            except AttributeError:
-                source_docs = self.retriever.get_relevant_documents(question)  # type: ignore
-
             context = "\n\n".join(d.page_content for d in source_docs)
             full_prompt = self._build_prompt(
                 question, context, document_text, user_context, language
@@ -174,14 +180,14 @@ class QueryHandler:
             }
 
         except Exception as exc:
-            return self._handle_error(exc)
+            return self._handle_error(exc, source_docs=source_docs)
 
     # Alias for API compatibility
     answer_question = get_answer
 
     # ── Error handling ────────────────────────────────────────────────────────
 
-    def _handle_error(self, exc: Exception) -> Dict:
+    def _handle_error(self, exc: Exception, source_docs: Optional[List] = None) -> Dict:
         exc_str = str(exc).lower()
 
         try:
@@ -189,20 +195,24 @@ class QueryHandler:
             if isinstance(exc, _oa.AuthenticationError):
                 return self._fallback(
                     "🔑 **Authentication Error**: Your OpenRouter API key is invalid or expired. "
-                    "Please check `OPENROUTER_API_KEY` in your `.env` file."
+                    "Please check `OPENROUTER_API_KEY` in your `.env` file.",
+                    source_docs=source_docs,
                 )
             if isinstance(exc, _oa.RateLimitError):
                 if any(k in exc_str for k in ("quota", "credit", "billing", "insufficient_quota", "exhausted")):
                     return self._fallback(
                         "💳 **Quota Exceeded / Credit Balance Exhausted**: Your OpenRouter account has no remaining credits. "
-                        "Please add credits at [OpenRouter Account](https://openrouter.ai/credits) or switch to a free model (e.g. `meta-llama/llama-3.3-70b-instruct:free`)."
+                        "Please add credits at [OpenRouter Account](https://openrouter.ai/credits) or switch to a free model (e.g. `meta-llama/llama-3.3-70b-instruct:free`).",
+                        source_docs=source_docs,
                     )
                 return self._fallback(
-                    "⏳ **Rate Limit**: Rate limit reached for this model. Please wait a minute or try another model in `.env`."
+                    "⏳ **Rate Limit**: Rate limit reached for this model. Please wait a minute or try another model in `.env`.",
+                    source_docs=source_docs,
                 )
             if isinstance(exc, _oa.APIConnectionError):
                 return self._fallback(
-                    "🌐 **Connection Error**: Cannot reach OpenRouter. Check your internet connection."
+                    "🌐 **Connection Error**: Cannot reach OpenRouter. Check your internet connection.",
+                    source_docs=source_docs,
                 )
         except ImportError:
             pass
@@ -210,43 +220,65 @@ class QueryHandler:
         if any(k in exc_str for k in ("quota", "credit", "billing", "insufficient_quota", "exhausted")):
             return self._fallback(
                 "💳 **Quota Exceeded / Credit Balance Exhausted**: Your OpenRouter account has no remaining credits. "
-                "Please add credits at [OpenRouter Account](https://openrouter.ai/credits) or switch to a free model in `.env`."
+                "Please add credits at [OpenRouter Account](https://openrouter.ai/credits) or switch to a free model in `.env`.",
+                source_docs=source_docs,
             )
         if any(k in exc_str for k in ("api_key", "authentication", "unauthorized", "incorrect api key")):
             return self._fallback(
-                "🔑 **API Key Error**: Your API key appears invalid. "
-                "Check `OPENROUTER_API_KEY` in `.env` and restart the app."
+                "🔑 **API Key Error**: Your API key appears invalid or expired. "
+                "Check `OPENROUTER_API_KEY` in `.env` and restart the app.",
+                source_docs=source_docs,
             )
         if any(k in exc_str for k in ("connection", "network", "timeout")):
-            return self._fallback("🌐 **Network Error**: Check your internet and try again.")
+            return self._fallback("🌐 **Network Error**: Check your internet and try again.", source_docs=source_docs)
         if any(k in exc_str for k in ("rate", "quota")):
-            return self._fallback("⏳ **Rate Limit**: Please wait a minute and try again.")
+            return self._fallback("⏳ **Rate Limit**: Please wait a minute and try again.", source_docs=source_docs)
 
         return self._fallback(
-            f"⚠️ **Error** ({type(exc).__name__}): {str(exc)[:300]}"
+            f"⚠️ **Error** ({type(exc).__name__}): {str(exc)[:300]}",
+            source_docs=source_docs,
         )
 
-    def _fallback(self, error_message: str) -> Dict:
-        answer = f"""## ⚠️ Service Notice
+    def _fallback(self, error_message: str, source_docs: Optional[List] = None) -> Dict:
+        lines = [
+            "## ⚠️ Service Notice",
+            "",
+            error_message,
+        ]
 
-{error_message}
+        if source_docs:
+            lines.extend([
+                "",
+                "## 📚 Verified Knowledge Base Guidance",
+                "Here is the relevant information retrieved directly from our official government schemes database for your query:",
+                "",
+            ])
+            for i, doc in enumerate(source_docs[:3], 1):
+                raw = doc.metadata.get("source", "Knowledge Base")
+                name = os.path.basename(raw).replace("_", " ").replace(".txt", "").strip().title()
+                content = doc.page_content.strip()
+                lines.append(f"### {i}. {name}")
+                lines.append(content)
+                lines.append("")
 
-## 💡 Official Resources (Available Now)
+        lines.extend([
+            "## 💡 Official Resources (Available Now)",
+            "",
+            "| Service | Portal |",
+            "|---|---|",
+            "| 🎓 Scholarships | [scholarships.gov.in](https://scholarships.gov.in) |",
+            "| 🆔 Aadhaar / UIDAI | [uidai.gov.in](https://uidai.gov.in) |",
+            "| 📜 RTI Online | [rtionline.gov.in](https://rtionline.gov.in) |",
+            "| 📋 DigiLocker | [digilocker.gov.in](https://digilocker.gov.in) |",
+            "| 🏛️ India Portal | [india.gov.in](https://india.gov.in) |",
+            "",
+            "**Helplines:** Aadhaar: **1947** · Scholarships: **0120-6619540** · RTI: **1800-11-81-81**",
+        ])
 
-| Service | Portal |
-|---|---|
-| 🎓 Scholarships | [scholarships.gov.in](https://scholarships.gov.in) |
-| 🆔 Aadhaar / UIDAI | [uidai.gov.in](https://uidai.gov.in) |
-| 📜 RTI Online | [rtionline.gov.in](https://rtionline.gov.in) |
-| 📋 DigiLocker | [digilocker.gov.in](https://digilocker.gov.in) |
-| 🏛️ India Portal | [india.gov.in](https://india.gov.in) |
-
-**Helplines:** Aadhaar: **1947** · Scholarships: **0120-6619540** · RTI: **1800-11-81-81**
-"""
         return {
             "success": False,
             "error": error_message,
-            "answer": answer,
-            "sources": [],
+            "answer": "\n".join(lines),
+            "sources": self._format_sources(source_docs) if source_docs else [],
             "has_document": False,
         }
