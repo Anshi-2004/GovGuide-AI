@@ -3,10 +3,11 @@ GovGuide AI — FastAPI REST API Backend
 Connects React.js Frontend to PostgreSQL, FAISS Vector Search, and LLM APIs.
 """
 
+import io
 import os
 import sys
 import uuid
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from fastapi import FastAPI, Depends, HTTPException, Query, UploadFile, File, Form, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -136,6 +137,104 @@ class DocumentAnalyzeRequest(BaseModel):
     document_text: str
     language: Optional[str] = "English"
     document_title: Optional[str] = "Rejection Document"
+
+
+class DocumentUploadResponse(BaseModel):
+    filename: str
+    text: str
+    char_count: int
+    file_type: str
+    preview: str
+    error: Optional[str] = None
+
+
+def extract_text_from_file_bytes(raw_bytes: bytes, filename: str, content_type: Optional[str] = None) -> Tuple[str, Optional[str]]:
+    """Extract readable text from PDF, Image, or Text file bytes."""
+    fname = filename.lower()
+    ctype = (content_type or "").lower()
+
+    # 1. Handle PDF
+    if fname.endswith(".pdf") or "pdf" in ctype:
+        text_pages: List[str] = []
+        err_msg: Optional[str] = None
+
+        # Primary PDF extractor: pdfplumber
+        try:
+            import pdfplumber
+            with pdfplumber.open(io.BytesIO(raw_bytes)) as pdf:
+                for page in pdf.pages:
+                    pt = page.extract_text()
+                    if pt and pt.strip():
+                        text_pages.append(pt.strip())
+        except Exception as e:
+            err_msg = f"pdfplumber notice: {e}"
+
+        # Fallback PDF extractor: pypdf
+        if not text_pages:
+            try:
+                import pypdf
+                reader = pypdf.PdfReader(io.BytesIO(raw_bytes))
+                for page in reader.pages:
+                    pt = page.extract_text()
+                    if pt and pt.strip():
+                        text_pages.append(pt.strip())
+            except Exception as e:
+                err_msg = f"pypdf notice: {e}"
+
+        full_text = "\n\n".join(text_pages).replace("\x00", "").strip()
+        if full_text:
+            return full_text, None
+
+        return "", (
+            "Could not extract readable text from this PDF. "
+            "It may be a scanned or image-only document. "
+            "You can type or paste the rejection notice or document content directly into the text box below."
+        )
+
+    # 2. Handle Images (PNG, JPG, JPEG, WEBP)
+    if any(fname.endswith(ext) for ext in [".png", ".jpg", ".jpeg", ".webp"]) or "image" in ctype:
+        try:
+            from PIL import Image
+            import pytesseract
+
+            # Auto-detect Tesseract binary on Windows
+            possible_paths = [
+                r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+                r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+                os.path.expanduser(r"~\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"),
+            ]
+            for p in possible_paths:
+                if os.path.exists(p):
+                    pytesseract.pytesseract.tesseract_cmd = p
+                    break
+
+            img = Image.open(io.BytesIO(raw_bytes))
+            try:
+                text = pytesseract.image_to_string(img, lang="eng+hin")
+            except Exception:
+                text = pytesseract.image_to_string(img, lang="eng")
+
+            clean_text = text.replace("\x00", "").strip()
+            if clean_text:
+                return clean_text, None
+
+            return "", "Image was processed, but no readable text could be recognized. Please paste the rejection letter text directly into the box."
+        except Exception as exc:
+            return "", (
+                f"OCR processing notice: {exc}. "
+                "You can type or paste the rejection notice or document content directly into the text box below."
+            )
+
+    # 3. Handle Plain Text (.txt, .csv, .json, etc.)
+    try:
+        text = raw_bytes.decode("utf-8")
+        return text.replace("\x00", "").strip(), None
+    except UnicodeDecodeError:
+        try:
+            text = raw_bytes.decode("latin-1")
+            return text.replace("\x00", "").strip(), None
+        except Exception as exc:
+            return "", f"Could not decode file content: {exc}"
 
 
 # ── API Endpoints ─────────────────────────────────────────────────────────────
@@ -316,6 +415,27 @@ def get_scheme_detail(scheme_id: int, db: Session = Depends(get_db)):
     }
 
 
+@app.post("/api/documents/upload", response_model=DocumentUploadResponse)
+async def upload_document(file: UploadFile = File(...)):
+    """Extract clean text from uploaded PDF, Image, or Text documents."""
+    raw_bytes = await file.read()
+    filename = file.filename or "uploaded_document"
+    content_type = file.content_type or ""
+
+    text, error = extract_text_from_file_bytes(raw_bytes, filename, content_type)
+    clean_text = text.replace("\x00", "").strip()
+    preview = (clean_text[:400] + ("..." if len(clean_text) > 400 else "")) if clean_text else ""
+
+    return DocumentUploadResponse(
+        filename=filename,
+        text=clean_text,
+        char_count=len(clean_text),
+        file_type=content_type or filename.split(".")[-1],
+        preview=preview,
+        error=error,
+    )
+
+
 @app.post("/api/documents/analyze")
 def analyze_document(req: DocumentAnalyzeRequest):
     """Analyze uploaded rejection letters or documents for missing items and corrections."""
@@ -331,12 +451,12 @@ def analyze_document(req: DocumentAnalyzeRequest):
             )
 
     prompt_q = (
-        f"Please analyze this government application / document titled '{req.document_title}'. "
+        f"Please perform a complete diagnostic analysis of this uploaded document ('{req.document_title}'). "
         "Identify why it might be rejected or flagged, what documents or corrections are missing, "
         "and provide step-by-step guidance on how to fix it."
     )
 
-    res = query_handler.answer_question(
+    res = query_handler.get_answer(
         question=prompt_q,
         document_text=req.document_text,
         user_context=None,
@@ -346,6 +466,8 @@ def analyze_document(req: DocumentAnalyzeRequest):
     return {
         "title": req.document_title,
         "analysis": res.get("answer", "Could not analyze document."),
+        "sources": res.get("sources", []),
+        "has_document": True,
         "language": req.language,
     }
 

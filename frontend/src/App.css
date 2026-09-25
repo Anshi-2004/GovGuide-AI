@@ -1291,3 +1291,9 @@ h1, h2, h3, h4, h5, h6 {
   border-color: #2A4A2A;
   color: #86EFAC;
 }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+

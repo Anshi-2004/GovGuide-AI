@@ -81,31 +81,43 @@ class QueryHandler:
     def _document_context_block(self, document_text: Optional[str], is_hindi: bool) -> str:
         if not document_text:
             return ""
-        truncated = document_text[:3000]
+        # Increase truncation to 8,000 characters to capture full rejection letters/orders
+        truncated = document_text.replace("\x00", "").strip()[:8000]
         if is_hindi:
             return (
-                "\n**अपलोड किया गया दस्तावेज़** — इसका विश्लेषण करें:\n"
+                "\n**अपलोड किया गया आधिकारिक दस्तावेज़ / अस्वीकृति पत्र (विश्लेषण के लिए पाठ्य):**\n"
                 f"```\n{truncated}\n```\n"
             )
         return (
-            "\n**Uploaded Document** — Analyse this for issues, missing items, or "
-            "rejection reasons and provide corrective steps:\n"
+            "\n**Uploaded Official Document / Rejection Notice (Extracted Content for Analysis):**\n"
             f"```\n{truncated}\n```\n"
         )
 
     def _build_prompt(self, question, context, document_text, user_context, language):
         is_hindi = "Hindi" in language
-        base = Config.SYSTEM_PROMPT_HI if is_hindi else Config.SYSTEM_PROMPT_EN
+        has_doc = bool(document_text and document_text.strip())
+
+        # Select specialized diagnostic prompt when analyzing an uploaded document
+        if has_doc:
+            base = getattr(Config, "DOCUMENT_PROMPT_HI", Config.SYSTEM_PROMPT_HI) if is_hindi else getattr(Config, "DOCUMENT_PROMPT_EN", Config.SYSTEM_PROMPT_EN)
+        else:
+            base = Config.SYSTEM_PROMPT_HI if is_hindi else Config.SYSTEM_PROMPT_EN
+
         system_prompt = base.format(
             user_context=self._user_context_block(user_context),
             document_context=self._document_context_block(document_text, is_hindi),
         )
+
+        context_label = "आधिकारिक संदर्भ सामग्री (Official Knowledge Base):" if is_hindi else "Official Knowledge Base Context:"
+        user_label = "नागरिक का प्रश्न / विशिष्ट अनुरोध:" if is_hindi else "Citizen Request / Specific Inquiry:"
+        struct_label = "संरचित विश्लेषण (Structured Analysis):" if is_hindi else "Structured Analysis:"
+
         return (
             f"{system_prompt}\n\n"
-            "---\nKnowledge Base Context:\n"
+            f"---\n{context_label}\n"
             f"{context}\n\n"
-            f"---\nUser Question: {question}\n\n"
-            "Structured Answer:"
+            f"---\n{user_label}\n{question}\n\n"
+            f"{struct_label}"
         )
 
     @staticmethod
@@ -140,10 +152,32 @@ class QueryHandler:
         # Attempt to retrieve relevant knowledge chunks
         if self.vector_store:
             try:
+                retrieval_query = question
+                # When analyzing an uploaded document, ensure FAISS searches for the actual topic/service in the document
+                if document_text and len(document_text.strip()) > 15:
+                    generic_triggers = [
+                        "analyse this uploaded document",
+                        "analyze this uploaded document",
+                        "इस दस्तावेज़ का विश्लेषण करें",
+                        "analyse this document",
+                        "analyze this document",
+                        "what issues exist",
+                    ]
+                    q_lower = question.lower().strip()
+                    # If question is generic or very short, extract topic keywords from document header
+                    if any(t in q_lower for t in generic_triggers) or len(q_lower) < 35:
+                        doc_clean = " ".join(document_text.replace("\n", " ").split())
+                        doc_snippet = " ".join(doc_clean.split()[:40])
+                        retrieval_query = f"{doc_snippet} rejection verification rules eligibility"
+                    else:
+                        doc_clean = " ".join(document_text.replace("\n", " ").split())
+                        doc_keywords = " ".join(doc_clean.split()[:20])
+                        retrieval_query = f"{question} {doc_keywords}"
+
                 try:
-                    source_docs = self.retriever.invoke(question)
+                    source_docs = self.retriever.invoke(retrieval_query)
                 except AttributeError:
-                    source_docs = self.retriever.get_relevant_documents(question)  # type: ignore
+                    source_docs = self.retriever.get_relevant_documents(retrieval_query)  # type: ignore
             except Exception as ret_err:
                 print(f"[QueryHandler] Retrieval error: {ret_err}")
 

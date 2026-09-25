@@ -35,6 +35,21 @@ export function fetchSchemes({ state, category, income, search } = {}) {
   return request(`/api/schemes?${params.toString()}`);
 }
 
+// Document file upload (PDF, PNG, JPG, TXT)
+export async function uploadDocumentFile(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_BASE}/api/documents/upload`, {
+    method: "POST",
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(err.detail || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
 // Document analyze
 export function analyzeDocument({ document_text, language, document_title }) {
   return request("/api/documents/analyze", {

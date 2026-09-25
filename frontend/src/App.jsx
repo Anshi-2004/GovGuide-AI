@@ -8,6 +8,7 @@ import "./App.css";
 import {
   sendChat,
   fetchSchemes,
+  uploadDocumentFile,
   analyzeDocument,
   submitFeedback,
   fetchFeedbackStats,
@@ -127,6 +128,9 @@ export default function App() {
   const [docText, setDocText] = useState(null);
   const [docName, setDocName] = useState(null);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [extractingDoc, setExtractingDoc] = useState(false);
+  const [docExtractError, setDocExtractError] = useState(null);
+  const [showDocPreview, setShowDocPreview] = useState(false);
 
   /* ── Feedback stats ────────────────────────────────────────────── */
   const [fbStats, setFbStats] = useState(null);
@@ -196,8 +200,8 @@ export default function App() {
     if (!docText || loading) return;
     setLoading(true);
     const autoQ = isHindi
-      ? "इस दस्तावेज़ का विश्लेषण करें।"
-      : "Analyse this uploaded document and tell me what issues exist and what action to take.";
+      ? `कृपया इस अपलोड किए गए आधिकारिक दस्तावेज़ (${docName || "दस्तावेज़"}) का पूर्ण निदान और विश्लेषण करें। बताएं कि क्या त्रुटियां या कमियां हैं और नागरिक इसे कैसे सुधार सकते हैं।`
+      : `Please perform a complete diagnostic analysis of this uploaded document (${docName || "Document"}). Explain what issues or rejection reasons exist, what documents are missing, and step-by-step actions to fix it.`;
     try {
       const res = await sendChat({
         question: autoQ,
@@ -228,15 +232,42 @@ export default function App() {
   };
 
   /* ── Handle file upload ───────────────────────────────────────── */
-  const handleFileUpload = (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setDocText(ev.target.result);
-      setDocName(file.name);
-    };
-    reader.readAsText(file);
+
+    setExtractingDoc(true);
+    setDocExtractError(null);
+    setDocName(file.name);
+
+    try {
+      const res = await uploadDocumentFile(file);
+      if (res.error && (!res.text || !res.text.trim())) {
+        setDocExtractError(res.error);
+        setDocText("");
+        setShowDocPreview(true);
+      } else {
+        setDocText(res.text || "");
+        if (res.error) {
+          setDocExtractError(res.error);
+        }
+      }
+    } catch (err) {
+      if (file.name.toLowerCase().endsWith(".txt")) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          setDocText(ev.target.result);
+        };
+        reader.readAsText(file);
+      } else {
+        setDocExtractError(`Failed to process document: ${err.message}. You can paste the rejection letter text directly into the box.`);
+        setDocText("");
+        setShowDocPreview(true);
+      }
+    } finally {
+      setExtractingDoc(false);
+      e.target.value = "";
+    }
   };
 
   /* ── Handle feedback ──────────────────────────────────────────── */
@@ -304,7 +335,23 @@ export default function App() {
               className={`gov-nav-item${i === 0 ? " active" : ""}`}
               onClick={() => {
                 if (i === 0) { setShowHome(h => !h); setShowHelp(false); }
+                else if (i === 1) {
+                  document.querySelector('.gov-question-card')?.scrollIntoView({ behavior: 'smooth' });
+                  textareaRef.current?.focus();
+                }
+                else if (i === 2) {
+                  document.querySelector('.gov-schemes-section')?.scrollIntoView({ behavior: 'smooth' });
+                }
+                else if (i === 3) {
+                  setUploadOpen(true);
+                  setTimeout(() => {
+                    document.querySelector('.gov-upload-section')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 50);
+                }
                 else if (i === 4 || i === 6) { setShowHelp(h => !h); setShowHome(false); }
+                else if (i === 5) {
+                  document.querySelector('.gov-footer')?.scrollIntoView({ behavior: 'smooth' });
+                }
               }}
             >
               {item}
@@ -429,21 +476,81 @@ export default function App() {
                   type="file"
                   accept=".pdf,.png,.jpg,.jpeg,.txt"
                   onChange={handleFileUpload}
+                  disabled={extractingDoc}
                 />
               </div>
-              {docText && (
-                <div style={{ marginTop: 12 }}>
-                  <div className="gov-success">
-                    ✅ <strong>{docName}</strong> — {docText.length.toLocaleString()} characters extracted
+
+              {/* Extraction progress indicator */}
+              {extractingDoc && (
+                <div style={{ marginTop: 12, padding: "10px 14px", background: "var(--bg-card-info)", borderRadius: 6, display: "flex", alignItems: "center", gap: 10, fontSize: "0.88rem", border: "1px solid var(--blue-border)" }}>
+                  <span style={{ animation: "spin 1.5s linear infinite", display: "inline-block" }}>⚙️</span>
+                  <span><strong>{isHindi ? "दस्तावेज़ संसाधित हो रहा है..." : "Processing document..."}</strong> {isHindi ? "सर्वर PDF/OCR से पठनीय पाठ्य निकाल रहा है।" : "Extracting readable text via PDF/OCR engine."}</span>
+                </div>
+              )}
+
+              {/* Notice or extraction error if any */}
+              {docExtractError && (
+                <div className="gov-card gov-card-warning" style={{ marginTop: 12, padding: 12 }}>
+                  <div style={{ fontWeight: 600, color: "var(--warning-text, #b45309)", marginBottom: 4 }}>
+                    ⚠️ {isHindi ? "दस्तावेज़ सूचना" : "Document Notice"}
                   </div>
-                  <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                    <button className="gov-btn-amber" onClick={handleAnalyzeDoc} disabled={loading}>
+                  <div style={{ fontSize: "0.85rem", marginBottom: 6 }}>{docExtractError}</div>
+                  <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+                    {isHindi ? "आप अस्वीकृति पत्र या नोटिस का पाठ्य नीचे सीधे टाइप या पेस्ट कर सकते हैं:" : "You can review, type, or paste your rejection notice text directly below:"}
+                  </div>
+                </div>
+              )}
+
+              {/* Extracted text or manual paste area */}
+              {docText !== null && docText !== undefined && (
+                <div style={{ marginTop: 12 }}>
+                  <div className="gov-success" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                    <span>✅ <strong>{docName || (isHindi ? "दस्तावेज़" : "Document")}</strong> — {docText.length.toLocaleString()} {isHindi ? "अक्षर निकाले गए" : "characters extracted"}</span>
+                    <button
+                      type="button"
+                      className="gov-btn-sm"
+                      style={{ background: "transparent", border: "1px solid var(--border-default)", cursor: "pointer", fontSize: "0.8rem", padding: "3px 8px", borderRadius: 4 }}
+                      onClick={() => setShowDocPreview(p => !p)}
+                    >
+                      {showDocPreview ? (isHindi ? "छिपाएं ▲" : "Hide Preview ▲") : (isHindi ? "👁️ पाठ्य देखें/संपादित करें ▼" : "👁️ View/Edit Text ▼")}
+                    </button>
+                  </div>
+
+                  {showDocPreview && (
+                    <div style={{ marginTop: 8 }}>
+                      <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: 4 }}>
+                        {isHindi ? "निकाला गया पाठ्य (समीक्षा करें, सुधारें या आवश्यकतानुसार पेस्ट करें):" : "Extracted Content (review, edit, or paste if needed):"}
+                      </div>
+                      <textarea
+                        style={{ width: "100%", minHeight: 120, padding: 10, fontSize: "0.85rem", borderRadius: 6, border: "1px solid var(--border-default)", background: "var(--bg-main)", color: "var(--text-main)", fontFamily: "monospace", boxSizing: "border-box" }}
+                        value={docText}
+                        onChange={e => setDocText(e.target.value)}
+                        placeholder={isHindi ? "अस्वीकृति पत्र का पाठ्य यहाँ पेस्ट करें..." : "Paste or edit rejection letter text here..."}
+                      />
+                    </div>
+                  )}
+
+                  <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
+                    <button className="gov-btn-amber" onClick={handleAnalyzeDoc} disabled={loading || extractingDoc || !docText.trim()}>
                       {isHindi ? "🔍 दस्तावेज़ का विश्लेषण करें" : "🔍 Analyse This Document"}
                     </button>
-                    <button className="gov-btn-danger gov-btn-sm" onClick={() => { setDocText(null); setDocName(null); }}>
+                    <button className="gov-btn-danger gov-btn-sm" onClick={() => { setDocText(null); setDocName(null); setDocExtractError(null); setShowDocPreview(false); }}>
                       {isHindi ? "🗑️ हटाएं" : "🗑️ Clear"}
                     </button>
                   </div>
+                </div>
+              )}
+
+              {/* Option to enter/paste text manually if no document loaded */}
+              {docText === null && !extractingDoc && (
+                <div style={{ marginTop: 10, textAlign: "right" }}>
+                  <button
+                    type="button"
+                    style={{ background: "none", border: "none", color: "var(--blue-link, #2563eb)", cursor: "pointer", fontSize: "0.82rem", textDecoration: "underline" }}
+                    onClick={() => { setDocText(""); setDocName("Pasted Document Notice"); setShowDocPreview(true); }}
+                  >
+                    ✍️ {isHindi ? "या अस्वीकृति पत्र का पाठ्य सीधे यहाँ पेस्ट करें" : "Or paste rejection notice text manually"}
+                  </button>
                 </div>
               )}
             </div>
